@@ -1,0 +1,71 @@
+/* line 5, ../scss/cjw.scss */
+*, body {
+  line-height: 1.3;
+}
+
+/* line 9, ../scss/cjw.scss */
+h2 {
+  font-weight: bold;
+}
+
+/* line 12, ../scss/cjw.scss */
+h2, h3 {
+  color: #515151;
+}
+
+/* line 16, ../scss/cjw.scss */
+q, blockquote {
+  font-weight: bold;
+}
+
+/* line 20, ../scss/cjw.scss */
+strong {
+  font-weight: bold;
+}
+
+/* line 24, ../scss/cjw.scss */
+em {
+  font-style: italic;
+}
+
+/* line 28, ../scss/cjw.scss */
+.logoslide img {
+  width: 768px;
+  height: 256px;
+}
+
+/* line 33, ../scss/cjw.scss */
+slides > slide {
+  color: #515151;
+}
+/* line 37, ../scss/cjw.scss */
+slides > slide.title-slide:after {
+  content: '';
+  background: url(../../images/cjwlogo.png) no-repeat 100% 50%;
+  -webkit-background-size: contain;
+  -moz-background-size: contain;
+  -o-background-size: contain;
+  background-size: contain;
+  position: absolute;
+  bottom: 80px;
+  right: 40px;
+  width: 100%;
+  height: 90px;
+}
+/* line 49, ../scss/cjw.scss */
+slides > slide.title-slide hgroup h1 {
+  font-weight: bold;
+  line-height: 1.1;
+}
+/* line 53, ../scss/cjw.scss */
+slides > slide.title-slide hgroup h2, slides > slide.title-slide hgroup p {
+  color: #515151;
+}
+/* line 56, ../scss/cjw.scss */
+slides > slide.title-slide hgroup h2 {
+  margin-top: 0.25em;
+}
+/* line 59, ../scss/cjw.scss */
+slides > slide.title-slide hgroup p {
+  margin-top: 3em;
+}

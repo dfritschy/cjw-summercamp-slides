@@ -1,0 +1,687 @@
+<!--
+Google IO 2012 HTML5 Slide Template
+
+Authors: Eric Bidelman <ebidel@gmail.com>
+         Luke Mahe <lukem@google.com>
+
+URL: https://code.google.com/p/io-2012-slides
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>eZ Summercamp 2013</title>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <!--link rel="stylesheet" media="all" href="theme/css/app.css"-->
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+<slide class="logoslide nobackground">
+  <article class="flexbox vcenter">
+    <span><img src="images/cjwlogo.png"></span>
+  </article>
+</slide>
+
+<slide class="title-slide segue nobackground">
+  <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+  <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+  <hgroup class="auto-fadein">
+    <h1 data-config-title><!-- populated from slide_config.json --></h1>
+    <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+    <p data-config-presenter><!-- populated from slide_config.json --></p>
+  </hgroup>
+</slide>
+
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Presenters</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><!---
+
+  eZ Summercamp 2013 Talk
+
+  How we started with eZ Publish 5 - A real use case
+  A cookbook for successful migration from eZ 4 to the Symfony stack
+
+  (c) 2013 Ekkehard Doerre, Donat Fritschy
+
+-->
+
+<ul class="build">
+<li><strong>Ekke</strong> is consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.</li>
+<li><strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box.</li>
+<li>Members of CJW Network</li>
+<li><em>Both are experienced eZ developers, but neither PHP nor Symfony cracks!</em></li>
+</ul></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Why a cookbook?</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul class="build">
+<li>eZ Publish 5 allows for a smooth migration of eZ legacy projects to the Symfony stack, permitting them to profit from the exiting new possibilities</li>
+<li>However, it is a completely new beast</li>
+<li>This workshop presents some basic recipes for beginners</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="big" >
+  
+    <hgroup>
+      <h2>Agenda</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Things we'll cover:</p>
+<ul class="build">
+<li>eZ 5 Installation</li>
+<li>Building our first Bundle</li>
+<li>Overriding the Page Layout Template</li>
+<li>Integrating old Templates</li>
+<li>Overriding Content Type (formerly Class) Templates</li>
+<li>Overriding Field Type (formerly Attribute) Templates</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Installation</h2>
+      <h3>Prepare the ingredients...</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Installation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #1: Use the installation package</code></p>
+<ul>
+<li>Use the installation packages from <a href="http://share.ez.no/downloads">share.ez.no</a></li>
+<li>These are consistent and tested</li>
+<li>Everybody knows about what you speak</li>
+<li>Forking from <a href="https://github.com/ezsystems/ezpublish-community">GitHub</a> is great, if you want and are able to contribute</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Installation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #2: Read the Installation notes</code></p>
+<ul>
+<li>eZ 5 is a complex install and different from what you know</li>
+<li>Actually, it combines to environments<ul>
+<li>Symfony</li>
+<li>eZ Publish legacy (eZ 4.7)</li>
+</ul>
+</li>
+</ul>
+<p>Common Pitfalls:</p>
+<ul>
+<li>Linking the assets</li>
+<li>Directory and file permissions</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Installation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #3: Get directory and file permissions right</code></p>
+<p>Strategy 1 (quick and dirty)</p>
+<ul>
+<li>Same user/group for web server and console user</li>
+</ul>
+<p>Strategy 2</p>
+<ul>
+<li>Separate users for web server and console user</li>
+<li>Both members of <code>www</code> group</li>
+<li>Requires <code>umask( 0007 )</code></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Installation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #4: Use the setup wizard</code></p>
+<ul class="build">
+<li>This will give you a testable environment...</li>
+<li>... which will immediately show you all problems ;-)</li>
+<li><a href="http://ezpublish.ezsc/">http://ezpublish.ezsc/</a></li>
+<li><a href="http://ezpublish.ezsc/ezdemo_site_admin">http://ezpublish.ezsc/ezdemo_site_admin</a></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Installation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #5: The console is you friend</code></p>
+<p>Check out the <code>console</code> command! To list all available commands use</p>
+<pre class="prettyprint" data-lang="bash">
+$ php ezpublish/console
+</pre>
+
+<p>The most important commands:</p>
+<pre class="prettyprint" data-lang="bash">
+$ php ezpublish/console cache:clear
+
+$ php ezpublish/console assets:install
+$ php ezpublish/console assetic:dump
+
+$ php ezpublish/console twig:lint
+</pre></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Creating bundles</h2>
+      <h3>bring to the boil...</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Creating a bundle</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>Recipe #6: Use bundles for your sites</code></p>
+<p>A Bundle is similar to an eZ extension and module. We suggest you create separate 'site' bundles for all site and 'functional' bundles for common components.</p>
+<p>Creation of a bundle is easy:</p>
+<pre class="prettyprint" data-lang="bash">
+$ php ezpublish/console generate:bundle
+</pre>
+
+<p>Follow suggested Namespace conventions: <code>YourCompany/YourCustomer/ComponentBundle</code> (<code>CjwNetwork/Summercamp2013/CookBookBundle</code>)</p>
+<p>You may define a shorted name for your bundle, as we have: <code>CjwCookBookBundle</code></p>
+<p>Create the Bundle in the <code>src</code> folder and answer <code>yes</code> to all questions.</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Testing your bundle</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>A generated bundle contains sample code that allow for easy testing:</p>
+<p><a href="http://ezpublish.ezsc/hello/demo">http://ezpublish.ezsc/hello/demo</a></p>
+<p>The magic is done through a controller which receives the request and prepares a response with the help of a template renderer.</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Controller/DefaultController.php</code></p>
+<pre class="prettyprint" data-lang="php">
+class DefaultController extends Controller
+{
+    public function indexAction($name)
+    {
+        return $this->render('CjwCookBookBundle:Default:index.html.twig', array('name' => $name));
+    }
+}
+</pre>
+
+<p>Note: when implementing your own controllers, follow the code in eZDemoBundle as it includes additional classes for accessing the repository.</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Inspecting the TWIG template</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/Default/index.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+Hello {{ name}}
+</pre>
+
+<p>We add some formatting and apply a TWIG filter:</p>
+<pre class="prettyprint" data-lang="twig">
+&lt;h1&gt;Hello and good morning {{ name | upper }}!&lt;/h1&gt;
+</pre>
+
+<p><a href="http://ezpublish.ezsc/hello/demo">http://ezpublish.ezsc/hello/demo</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Adding a page layout</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>Unlike eZ Publish legacy, TWIG templates work “bottom up” and support inheritance.</p>
+<p>Therefore it’s easy to show the output in the standard eZ Demo Layout:</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/Default/index.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{# This template extends pagelayout.html.twig and just replaces the 'content' block #}
+<b>{% extends "eZDemoBundle::pagelayout.html.twig" %}</b>
+
+<b>{% block content %}</b>
+&lt;h1&gt;Hello and good morning {{ name | upper }}!&lt;/h1&gt;
+<b>{% endblock %}</b>
+</pre></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Overriding standard Templates</h2>
+      <h3>Dish up...</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Creating a TWIG template for article</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/full/article.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% extends noLayout ? viewbaseLayout : "eZDemoBundle::pagelayout.html.twig" %}
+{% block content %}
+    {# render a simple field #}
+    &lt;h3&gt;{{ ez_render_field( content, "title" ) }}&lt;/h3&gt;
+    {# add a class attribute #}
+    {{ ez_render_field(
+        content,
+        "short_title",
+        {
+            'attr': { 'class': 'foobar' }
+        }
+    ) }}
+    {# add an id to uniquely address this element #}
+    {{ ez_render_field(
+        content,
+        "author",
+        {
+            'attr': { 'id': 'authors' }
+        }
+    ) }}
+    {{ ez_render_field( content, "intro" ) }}
+    {{ ez_render_field( content, "body" ) }}
+{% endblock %}
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Configuration Settings</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>Recipe #7: Define Settings in your Bundle using Prepend</code></p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/DependencyInjection/CjwCookBookExtension.php</code></p>
+<pre class="prettyprint" data-lang="php">
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\Config\FileLocator;
+use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\Yaml\Yaml;
+
+class CjwCookBookExtension extends Extension implements PrependExtensionInterface
+
+…
+
+public function prepend( ContainerBuilder $container )
+{
+    // Loading our YAML file containing our template rules
+    $config = Yaml::parse( __DIR__ . '/../Resources/config/override.yml' );
+    // We explicitly prepend loaded configuration for "ezpublish" namespace.
+    // So it will be placed under the "ezpublish" configuration key, like in ezpublish.yml.
+    $container->prependExtensionConfig( 'ezpublish', $config );
+}
+</pre>
+
+<p><a href="https://confluence.ez.no/display/EZP/Import+settings+from+a+bundle">https://confluence.ez.no/display/EZP/Import+settings+from+a+bundle</a></p>
+<p>Note: when implementing your own controllers, follow the code in eZDemoBundle as it includes additional classes for accessing the repository.</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Override Settings</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/config/override.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+# We explicitly prepend config for "ezpublish" namespace in service container extension, 
+# so no need to repeat it here
+system:
+    ezdemo_site:
+        location_view:
+            full:
+                article_test:
+                    template: "CjwCookBookBundle:full:article.html.twig"
+                    match:
+                        Identifier\ContentType: article
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Change the Field Type Template ezauthor …</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/fields/field_templates.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{# you must inherit from this template in order to use the block() functions !#}
+<b>{% extends "EzPublishCoreBundle::content_fields.html.twig"  %}</b>
+
+{% block ezauthor_field %}
+    {% spaceless %}
+        {% if field.value.authors|length() > 0 %}
+            &lt;ul {{ block( 'field_attributes' ) }}&gt;
+                {% for author in field.value.authors %}
+                    &lt;li&gt;&lt;a href="mailto:{{ author.email|escape( 'url' ) }}"&gt;xx {{ author.name }} xx&lt;/a&gt;&lt;/li&gt;
+                {% endfor %}
+            &lt;/ul&gt;
+        {% endif %}
+    {% endspaceless %}
+{% endblock %}
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>… and the Field Type Template ezdatetime</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/fields/field_templates.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% block ezdatetime_field %}
+    {% spaceless %}
+        {% if field.value.value %}
+            {% if fieldSettings.useSeconds %}
+                {% set field_value = field.value.value|localizeddate( 'short', 'medium', parameters.locale ) %}
+            {% else %}
+                {% set field_value = field.value.value|localizeddate( 'short', 'short', parameters.locale ) %}
+            {% endif %}
+            xx {{ block( 'simple_block_field' ) }} xx
+        {% endif %}
+    {% endspaceless %}
+{% endblock %}
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Override Settings for Field Types</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/config/override.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+# We explicitly prepend config for "ezpublish" namespace in service container extension, 
+# so no need to repeat it here
+system:
+    ezdemo_site:
+        location_view:
+            full:
+                article_test:
+                    template: "CjwCookBookBundle:full:article.html.twig"
+                    match:
+                        Identifier\ContentType: article
+        <b>field_templates:
+            -
+                template: "CjwCookBookBundle:fields:field_templates.html.twig"
+                # Priority is optional (default is 0). The higher it is, the higher your template gets in the list.
+                priority: 10</b>
+
+</pre></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>A brand new pagelayout</h2>
+      <h3>… yes, yes, yes!</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Adding a new pagelyout for our TWIG article</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>We have prepared a brand new page layout in our bundle. You can find it at</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig</code></p>
+<p>To use it, change</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/full/article.html.twig</code></p>
+<p>to reference it:</p>
+<pre class="prettyprint" data-lang="twig">
+{% extends noLayout ? viewbaseLayout : "<b>CjwCookBookBundle</b>::pagelayout.html.twig" %}
+</pre>
+
+<p>Now articles (only!) are shown using the new page layout.</p></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Some more goodies</h2>
+      <h3>… and enjoy!</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Set the missing HTML title</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>In eZDemoBundle the page title is not correctly set. <code>{{ title|default( 'Home' ) }}</code> is empty, so we need to set it.
+We look for the legacy path, then for new eZ Publish content and the for our own bundle.</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% if ezpublish.legacy.has( 'path' ) %}
+    {% set path = ezpublish.legacy.get( 'path' ) %}
+    {% set title %}
+        CJW Network {% for pathitem in path|reverse %} / {{ pathitem.text }}{% endfor %}
+    {% endset %}
+{% elseif content is defined%}
+    {% set title %}
+        CJW Network / {{ content.contentInfo.name }} / (location ID is #{{ location.id }})
+    {% endset %}
+{% else %}
+    {% set title %}
+        CJW Network / {{ name | capitalize }}
+    {% endset %}
+{% endif %}
+</pre>
+
+<p><a href="https://confluence.ez.no/display/EZP/Twig+Helper">https://confluence.ez.no/display/EZP/Twig+Helper</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Include an old eZ Publish Template (.tpl)</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>To include an old eZ Template, e.g. <code>ezpublish_legacy/extension/ezdemo/design/ezdemo/templates/footer/latest_news.tpl</code>
+into your TWIG pagelayout, use the following code:</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% block latest_news %}
+    {% include "design:footer/latest_news.tpl" %}
+{% endblock %}
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Include an old eZ Publish Template (.tpl)</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>You can also pass parameters to an old template: change the fetch in</p>
+<p><code>ezpublish_legacy/extension/ezdemo/design/ezdemo/templates/footer/latest_news.tpl</code></p>
+<p>to <code>( 'content', 'tree', hash( 'parent_node_id', $parent_node_id, … )</code></p>
+<p>and set the variable <code>{$parent_node_id}</code>  in your TWIG pagelayout</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% block latest_news %}
+    {% include "design:footer/latest_news.tpl" with {"parent_node_id": 2} %}
+{% endblock %}
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Override several blocks of the page layout</h2>
+      <h3></h3>
+    </hgroup>
+    <article class="smaller"><p>You can override several blocks of the TWIG pagelayout in a template that inherits from it.</p>
+<p><code>src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/full/article.html.twig</code></p>
+<pre class="prettyprint" data-lang="twig">
+{% block latest_news %}
+    We set the content here for the latest_news block in our pagelayout
+{% endblock %}
+
+{% block content %}
+    ...
+{% endblock %}
+</pre>
+
+<p><a href="https://confluence.ez.no/display/EZP/Legacy+code+and+features#Legacycodeandfeatures-LegacyTemplateinclusion">https://confluence.ez.no/display/EZP/Legacy+code+and+features#Legacycodeandfeatures-LegacyTemplateinclusion</a></p></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>And one more thing...</h2>
+      <h3></h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Globally overriding Resources!</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Recipe #8: Override resources from bundles using the ezpublish/Resource folder</code></p>
+<p>Symfony allows for globally overrides of resources. You can teach eZ Publish the same trick!</p>
+<p>Suppose you want to override the eZDemo page layout:</p>
+<ul>
+<li>In the <code>ezpublish</code> folder, create a <code>Resources</code> folder</li>
+<li>Replicate the directory structure for the elements you want to override</li>
+<li>e.g. <code>Resources/eZDemoBundle/views</code> - use the correct bundle name!!!</li>
+<li>Place your files there</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2></h2>
+      <h3></h3>
+    </hgroup>
+    <article ></article>
+ 
+</slide>
+
+
+<slide class="thank-you-slide segue nobackground">
+  <aside class="gdbar right"><img src="images/cjwlogo_128.png"></aside>
+  <article class="flexbox vleft auto-fadein">
+    <h2>&lt;Thank You!&gt;</h2>
+    <p>Important contact information goes here.</p>
+  </article>
+  <p class="auto-fadein" data-config-contact>
+    <!-- populated from slide_config.json -->
+  </p>
+</slide>
+
+<slide class="backdrop"></slide>
+
+</slides>
+
+<!--
+<script>
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-XXXXXXXX-1']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+})();
+</script>
+-->
+
+<!--[if IE]>
+  <script src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js"></script>
+  <script>CFInstall.check({mode: 'overlay'});</script>
+<![endif]-->
+</body>
+</html>
