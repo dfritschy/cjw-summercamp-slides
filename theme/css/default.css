@@ -301,7 +301,7 @@ slides > slide.dark {
 /* line 135, ../scss/default.scss */
 slides > slide:not(.nobackground):before {
   font-size: 12pt;
-  content: "";
+  content: "#ezsummer";
   position: absolute;
   bottom: 20px;
   left: 60px;
@@ -1237,7 +1237,7 @@ article.smaller q:before, article.smaller q:after {
 
 /* line 826, ../scss/default.scss */
 .thank-you-slide {
-  background: #4387fd !important;
+  background: #dd9700 !important;
   color: white;
 }
 /* line 830, ../scss/default.scss */

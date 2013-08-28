@@ -9,18 +9,17 @@ build_lists: true
   How we started with eZ Publish 5 - A real use case
   A cookbook for successful migration from eZ 4 to the Symfony stack
 
-  (c) 2013 Ekkehard Doerre, Donat Fritschy
+  (c) 2013 Ekkehard Dörre, Donat Fritschy
 
 -->
 
-* <strong>Ekke</strong> is consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.
+* <strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.
 * <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box.
 * Members of CJW Network
-* *Both are experienced eZ developers, but neither PHP nor Symfony cracks!*
 
 ---
 
-title: Why a cookbook?
+title: Why a Cookbook?
 class: big
 build_lists: true
 
@@ -42,6 +41,7 @@ Things we'll cover:
 - Integrating old Templates
 - Overriding Content Type (formerly Class) Templates
 - Overriding Field Type (formerly Attribute) Templates
+- One more thing...
 
 ---
 
@@ -78,6 +78,9 @@ Recipe #2: Read the Installation notes
     * Symfony
     * eZ Publish legacy (eZ 4.7)
 
+* <https://confluence.ez.no/display/EZP/Requirements>
+* <https://confluence.ez.no/display/EZP/Normal+installation>
+
 Common Pitfalls:
 
 * Linking the assets
@@ -99,7 +102,10 @@ Strategy 2
 
 * Separate users for web server and console user
 * Both members of `www` group
-* Requires ```umask( 0007 )```
+* Usually requires ```umask( 0007 )```
+
+* <https://confluence.ez.no/x/9YBx>
+* <http://symfony.com/doc/current/book/installation.html#configuration-and-setup>
 
 ---
 
@@ -114,18 +120,26 @@ Recipe #4: Use the setup wizard
 * ... which will immediately show you all problems ;-)
 * <http://ezpublish.ezsc/>
 * <http://ezpublish.ezsc/ezdemo_site_admin>
-
+  * Login: admin / Password: ezsc
 
 ---
 
 title: eZ 5 Installation
-build_lists: true
+content_class: smaller
 
 ```
 Recipe #5: The console is you friend
 ```
 
-Check out the ```console``` command! To list all available commands use
+Check out the ```console``` command! First, log into the virtual machine using SSH
+
+<pre class="prettyprint" data-lang="bash">
+$ ssh ezsc@vm.ezsc
+ezsc@vm.ezsc''s password: ezsc
+$ cd /var/www/ezpublish
+</pre>
+
+To list all available commands use
 
 <pre class="prettyprint" data-lang="bash">
 $ php ezpublish/console
@@ -144,20 +158,20 @@ $ php ezpublish/console twig:lint
 
 ---
 
-title: Creating bundles
+title: Creating Bundles
 subtitle: bring to the boil...
 class: segue dark nobackground
 
 ---
 
-title: Creating a bundle
+title: Creating a Bundle
 content_class: smaller
 
 ```
 Recipe #6: Use bundles for your sites
 ```
 
-A Bundle is similar to an eZ extension and module. We suggest you create separate 'site' bundles for all site and 'functional' bundles for common components.
+A Bundle is similar to an eZ extension and module. We suggest you create separate 'site' bundles for all sites and 'functional' bundles for common components.
 
 Creation of a bundle is easy:
 
@@ -171,16 +185,18 @@ You may define a shorted name for your bundle, as we have: ```CjwCookBookBundle`
 
 Create the Bundle in the ```src``` folder and answer ```yes``` to all questions.
 
+Note: this will also change ```ezpublish/EzPublishKernel.php``` and ```ezpublish/config/routing.yml``` to reference the generated bundle.
+
 ---
 
-title: Testing your bundle
+title: Testing Your Bundle
 content_class: smaller
 
-A generated bundle contains sample code that allow for easy testing:
+A generated bundle contains sample code that allows for easy testing:
 
 <http://ezpublish.ezsc/hello/demo>
 
-The magic is done through a controller which receives the request and prepares a response with the help of a template renderer.
+The magic is done through a controller which receives the request from the router and prepares a response with the help of a template renderer.
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Controller/DefaultController.php```
 
@@ -198,7 +214,7 @@ Note: when implementing your own controllers, follow the code in eZDemoBundle as
 
 ---
 
-title: Inspecting the TWIG template
+title: Inspecting the TWIG Template
 content_class: smaller
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/Default/index.html.twig```
@@ -213,11 +229,12 @@ We add some formatting and apply a TWIG filter:
 &lt;h1&gt;Hello and good morning {{ name | upper }}!&lt;/h1&gt;
 </pre>
 
-<http://ezpublish.ezsc/hello/demo>
+* <http://ezpublish.ezsc/hello/demo>
+* TWIG Doc <http://twig.sensiolabs.org/doc/filters/upper.html>
 
 ---
 
-title: Adding a page layout
+title: Adding a Page Layout
 content_class: smaller
 
 Unlike eZ Publish legacy, TWIG templates work “bottom up” and support inheritance.
@@ -237,13 +254,13 @@ Therefore it’s easy to show the output in the standard eZ Demo Layout:
 
 ---
 
-title: Overriding standard Templates
+title: Overriding Standard Templates
 subtitle: Dish up...
 class: segue dark nobackground
 
 ---
 
-title: Creating a TWIG template for article
+title: Creating a TWIG Template for Article
 content_class: smaller
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/full/article.html.twig```
@@ -283,33 +300,44 @@ content_class: smaller
 Recipe #7: Define Settings in your Bundle using Prepend
 ```
 
+Besides the global configuration settings in ```ezpublish/config/ezpublish.yml``` there are other possibilities to define settings:
+
+<https://confluence.ez.no/display/EZP/Import+settings+from+a+bundle>
+
+We prefer the one which allows the settings to be “prepended” to the normal settings, as no changes to the global settings are needed.
+
+Note: when implementing your own controllers, follow the code in eZDemoBundle as it includes additional classes for accessing the repository.
+
+---
+
+title: Configuration Settings
+content_class: smaller
+
+```
+Recipe #7: Define Settings in your Bundle using Prepend
+```
+
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/DependencyInjection/CjwCookBookExtension.php```
 
 <pre class="prettyprint" data-lang="php">
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
-use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;
+<b>use Symfony\Component\DependencyInjection\Extension\PrependExtensionInterface;</b>
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 use Symfony\Component\Yaml\Yaml;
 
-class CjwCookBookExtension extends Extension implements PrependExtensionInterface
+class CjwCookBookExtension extends Extension <b>implements PrependExtensionInterface</b>
 
-…
-
-public function prepend( ContainerBuilder $container )
+<b>public function prepend( ContainerBuilder $container )
 {
     // Loading our YAML file containing our template rules
     $config = Yaml::parse( __DIR__ . '/../Resources/config/override.yml' );
     // We explicitly prepend loaded configuration for "ezpublish" namespace.
     // So it will be placed under the "ezpublish" configuration key, like in ezpublish.yml.
     $container->prependExtensionConfig( 'ezpublish', $config );
-}
+}</b>
 </pre>
-
-<https://confluence.ez.no/display/EZP/Import+settings+from+a+bundle>
-
-Note: when implementing your own controllers, follow the code in eZDemoBundle as it includes additional classes for accessing the repository.
 
 ---
 
@@ -319,7 +347,7 @@ content_class: smaller
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/config/override.yml```
 
 <pre class="prettyprint" data-lang="yml">
-# We explicitly prepend config for "ezpublish" namespace in service container extension, 
+# We explicitly prepend config for "ezpublish" namespace in service container extension,
 # so no need to repeat it here
 system:
     ezdemo_site:
@@ -333,7 +361,7 @@ system:
 
 ---
 
-title: Change the Field Type Template ezauthor … 
+title: Change the Field Type Template ezauthor …
 content_class: smaller
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/fields/field_templates.html.twig```
@@ -385,7 +413,7 @@ content_class: smaller
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/config/override.yml```
 
 <pre class="prettyprint" data-lang="yml">
-# We explicitly prepend config for "ezpublish" namespace in service container extension, 
+# We explicitly prepend config for "ezpublish" namespace in service container extension,
 # so no need to repeat it here
 system:
     ezdemo_site:
@@ -404,13 +432,13 @@ system:
 </pre>
 ---
 
-title: A brand new pagelayout
-subtitle: … yes, yes, yes!
+title: A Brand New Page Layout
+subtitle: … and enjoy!
 class: segue dark nobackground
 
 ---
 
-title: Adding a new pagelyout for our TWIG article
+title: Adding a New Page Layout for Our TWIG Article
 content_class: smaller
 
 We have prepared a brand new page layout in our bundle. You can find it at
@@ -429,15 +457,17 @@ to reference it:
 
 Now articles (only!) are shown using the new page layout.
 
+Note: to set the page layout for all your site, adjust the settings in ```ezpublish/config/parameters.yml```
+
 ---
 
-title: Some more goodies
-subtitle: … and enjoy!
+title: Some More Goodies
+subtitle: any sweets?
 class: segue dark nobackground
 
 ---
 
-title: Set the missing HTML title
+title: Set the Missing HTML Title
 content_class: smaller
 
 In eZDemoBundle the page title is not correctly set. ```{{ title|default( 'Home' ) }}``` is empty, so we need to set it.
@@ -466,11 +496,11 @@ We look for the legacy path, then for new eZ Publish content and the for our own
 
 ---
 
-title: Include an old eZ Publish Template (.tpl)
+title: Include an Old eZ Publish Template (.tpl)
 content_class: smaller
 
 To include an old eZ Template, e.g. ```ezpublish_legacy/extension/ezdemo/design/ezdemo/templates/footer/latest_news.tpl```
-into your TWIG pagelayout, use the following code:
+into your TWIG page layout, use the following code:
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig```
 
@@ -482,7 +512,7 @@ into your TWIG pagelayout, use the following code:
 
 ---
 
-title: Include an old eZ Publish Template (.tpl)
+title: Include an Old eZ Publish Template (.tpl)
 content_class: smaller
 
 You can also pass parameters to an old template: change the fetch in
@@ -491,7 +521,7 @@ You can also pass parameters to an old template: change the fetch in
 
 to ```( 'content', 'tree', hash( 'parent_node_id', $parent_node_id, … )```
 
-and set the variable ```{$parent_node_id}```  in your TWIG pagelayout
+and set the variable ```{$parent_node_id}```  in your TWIG page layout
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/pagelayout.html.twig```
 
@@ -503,16 +533,16 @@ and set the variable ```{$parent_node_id}```  in your TWIG pagelayout
 
 ---
 
-title: Override several blocks of the page layout
+title: Override Several Blocks of the Page Layout
 content_class: smaller
 
-You can override several blocks of the TWIG pagelayout in a template that inherits from it.
+You can override several blocks of the TWIG page layout in a template that inherits from it.
 
 ```src/CjwNetwork/SummerCamp2013/CookBookBundle/Resources/views/full/article.html.twig```
 
 <pre class="prettyprint" data-lang="twig">
 {% block latest_news %}
-    We set the content here for the latest_news block in our pagelayout
+    We set the content here for the latest_news block in our page layout
 {% endblock %}
 
 {% block content %}
@@ -524,12 +554,12 @@ You can override several blocks of the TWIG pagelayout in a template that inheri
 
 ---
 
-title: And one more thing...
+title: One More Thing...
 class: segue dark nobackground
 
 ---
 
-title: Globally overriding Resources!
+title: Globally Overriding Resources!
 
 ```
 Recipe #8: Override resources from bundles using the ezpublish/Resource folder
@@ -543,6 +573,4 @@ Suppose you want to override the eZDemo page layout:
 * Replicate the directory structure for the elements you want to override
 * e.g. ```Resources/eZDemoBundle/views``` - use the correct bundle name!!!
 * Place your files there
-
----
 

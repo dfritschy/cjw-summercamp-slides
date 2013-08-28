@@ -22,7 +22,7 @@ var SLIDE_CONFIG = {
 
   // Author information
   presenters: [{
-    name: 'Ekkehard Doerre',
+    name: 'Ekkehard Dörre',
     company: 'Coolscreen',
     // gplus: 'http://plus.google.com/1234567890',
     twitter: '@ekked',
