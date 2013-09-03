@@ -336,11 +336,7 @@ slides > slide.title-slide:after {
 slides > slide.backdrop {
   z-index: -10;
   display: block !important;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(85%, #ffffff), color-stop(100%, #e6e6e6));
-  background: -webkit-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: -moz-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: -o-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
+  /*@include background(linear-gradient(white, white 85%, $gray-1));*/
   background-color: white;
 }
 /* line 175, ../scss/default.scss */
@@ -1380,11 +1376,7 @@ aside.gdbar img {
   cursor: pointer;
   opacity: 0.5;
   pointer-events: auto !important;
-  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(85%, #ffffff), color-stop(100%, #e6e6e6));
-  background: -webkit-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: -moz-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: -o-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-  background: linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
+  /*@include background(linear-gradient(white, white 85%, $gray-1));*/
   background-color: white;
 }
 /* line 945, ../scss/default.scss */
@@ -1410,11 +1402,7 @@ aside.gdbar img {
   slides slide {
     display: block !important;
     position: relative;
-    background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(85%, #ffffff), color-stop(100%, #e6e6e6));
-    background: -webkit-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-    background: -moz-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-    background: -o-linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
-    background: linear-gradient(#ffffff, #ffffff 85%, #e6e6e6);
+    /*@include background(linear-gradient(white, white 85%, $gray-1));*/
     background-color: white;
     -webkit-transform: none !important;
     -moz-transform: none !important;

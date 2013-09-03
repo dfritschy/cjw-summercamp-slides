@@ -179,7 +179,7 @@ Creation of a bundle is easy:
 $ php ezpublish/console generate:bundle
 </pre>
 
-Follow suggested Namespace conventions: ```YourCompany/YourCustomer/ComponentBundle``` (```CjwNetwork/Summercamp2013/CookBookBundle```)
+Follow suggested Namespace conventions: ```YourCompany/YourCustomer/ComponentBundle``` (```CjwNetwork/SummerCamp2013/CookBookBundle```)
 
 You may define a shorted name for your bundle, as we have: ```CjwCookBookBundle```
 
@@ -574,3 +574,19 @@ Suppose you want to override the eZDemo page layout:
 * e.g. ```Resources/eZDemoBundle/views``` - use the correct bundle name!!!
 * Place your files there
 
+---
+
+title: Resources
+
+To install our cookbook
+
+<pre class="prettyprint" data-lang="bash">
+    cd <ezp5-root>/src
+    git clone https://github.com/dfritschy/cjw-cookbook.git CjwNetwork
+</pre>
+
+Find the slides and the bash script to recreate the steps in
+
+```
+CjwNetwork/SummerCamp2013/CookBookBundle/Resources/doc
+```
