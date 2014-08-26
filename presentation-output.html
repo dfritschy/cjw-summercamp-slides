@@ -52,18 +52,17 @@ URL: https://code.google.com/p/io-2012-slides
     </hgroup>
     <article ><!---
 
-  eZ Summercamp 2013 Talk
+  eZ Summercamp 2014 Talk
 
-  How we started with eZ Publish 5 - A real use case
-  A cookbook for successful migration from eZ 4 to the Symfony stack
+  Learnings from Real eZ Publish 5 Projects
 
-  (c) 2013 Ekkehard Dörre, Donat Fritschy
+  (c) 2014 Ekkehard Dörre, Donat Fritschy
 
 -->
 
 <ul class="build">
 <li><strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.</li>
-<li><strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box.</li>
+<li><strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.</li>
 <li>Members of CJW Network</li>
 </ul></article>
  
@@ -72,13 +71,13 @@ URL: https://code.google.com/p/io-2012-slides
 <slide class="big" >
   
     <hgroup>
-      <h2>Why a Cookbook?</h2>
+      <h2>Learnings from Real eZ Publish 5 Projects</h2>
       <h3></h3>
     </hgroup>
     <article ><ul class="build">
-<li>eZ Publish 5 allows for a smooth migration of eZ legacy projects to the Symfony stack, permitting them to profit from the exiting new possibilities</li>
-<li>However, it is a completely new beast</li>
-<li>This workshop presents some basic recipes for beginners</li>
+<li>Last year we have presented our Cookbok</li>
+<li>In the meantime we have realized a couple of larger and smaller eZ 5 projects</li>
+<li>We want to share these experiences</li>
 </ul></article>
  
 </slide>
@@ -91,13 +90,14 @@ URL: https://code.google.com/p/io-2012-slides
     </hgroup>
     <article ><p>Things we'll cover:</p>
 <ul class="build">
-<li>eZ 5 Installation</li>
-<li>Building our first Bundle</li>
-<li>Overriding the Page Layout Template</li>
-<li>Integrating old Templates</li>
-<li>Overriding Content Type (formerly Class) Templates</li>
-<li>Overriding Field Type (formerly Attribute) Templates</li>
-<li>One more thing...</li>
+<li>Best Practice</li>
+<li>Debugging</li>
+<li>
+<p>Pitfalls</p>
+</li>
+<li>
+<p>MultiSite Setup</p>
+</li>
 </ul></article>
  
 </slide>
@@ -106,8 +106,8 @@ URL: https://code.google.com/p/io-2012-slides
   
     <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
     <hgroup class="auto-fadein">
-      <h2>Installation</h2>
-      <h3>Prepare the ingredients...</h3>
+      <h2>Best Practice</h2>
+      <h3></h3>
     </hgroup>
   
 </slide>
@@ -115,15 +115,50 @@ URL: https://code.google.com/p/io-2012-slides
 <slide  >
   
     <hgroup>
-      <h2>eZ 5 Installation</h2>
+      <h2>TODO einzelne Slides</h2>
       <h3></h3>
     </hgroup>
-    <article ><p><code>Recipe #1: Use the installation package</code></p>
-<ul>
-<li>Use the installation packages from <a href="http://share.ez.no/downloads">share.ez.no</a></li>
-<li>These are consistent and tested</li>
-<li>Everybody knows about what you speak</li>
-<li>Forking from <a href="https://github.com/ezsystems/ezpublish-community">GitHub</a> is great, if you want and are able to contribute</li>
+    <article ><ul>
+<li>Project Layout</li>
+<li>Config Files</li>
+<li>Controller per Full View</li>
+<li>Base Bundle</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Debugging</h2>
+      <h3>Coping with blank screens</h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Blank screen, "503 Service not available"</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>PHP errors (Syntax error, Memory, Outdated Autoloads, ...)</li>
+<li>
+<p>Configuration errors (DB connection, ...)</p>
+</li>
+<li>
+<p>Switch to DEV mode for better debugging</p>
+</li>
+<li>Check the log files
+<pre>
+    Apache/PHP Log
+    ezpublish/logs/&lt;env&gt;.log
+    ezpublish_legacy/var/log/*
+    ezpublish_legacy/var/&lt;siteaccess&gt;/log/*
+</pre></li>
+<li>Check write permissions on log files!</li>
 </ul></article>
  
 </slide>
@@ -131,30 +166,136 @@ URL: https://code.google.com/p/io-2012-slides
 <slide  >
   
     <hgroup>
-      <h2>eZ 5 Installation</h2>
+      <h2>TwigBundle:Exception:error500.html.twig</h2>
       <h3></h3>
     </hgroup>
-    <article ><p><code>Recipe #2: Read the Installation notes</code></p>
-<ul>
-<li>eZ 5 is a complex install and different from what you know</li>
+    <article ><ul>
+<li>NEVER a Twig error!</li>
 <li>
-<p>Actually, it combines to environments</p>
-<ul>
-<li>Symfony</li>
-<li>eZ Publish legacy (eZ 4.7)</li>
-</ul>
+<p>Caused by response 500 "Internal Server Error" and missing error template</p>
 </li>
 <li>
-<p><a href="https://confluence.ez.no/display/EZP/Requirements">https://confluence.ez.no/display/EZP/Requirements</a></p>
+<p>Checks as before</p>
 </li>
-<li><a href="https://confluence.ez.no/display/EZP/Normal+installation">https://confluence.ez.no/display/EZP/Normal+installation</a></li>
-</ul>
-<p>Common Pitfalls:</p>
-<ul>
-<li>Linking the assets</li>
-<li>Directory and file permissions</li>
 </ul></article>
  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Memory limit exceeded in DEV mode</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>DEV mode takes a lot of memory</li>
+<li>Stash Logging is the worst</li>
+<li>Disable Stash Logging in ezpublish.yml</li>
+</ul>
+<pre class="prettyprint" data-lang="yml">
+stash:
+    <b>logging: false</b>
+    caches:
+        default:
+            handlers:
+                - FileSystem
+            inMemory: true
+            registerDoctrineAdapter: false
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Twig Exception: Invalid variation "&lt;variation&gt;"</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Caused by problems when accessing images</p>
+<ul>
+<li>Check if the file exists</li>
+<li>Check permissions on <code>ezpublish_legacy/var/&lt;siteaccess&gt;/storage</code></li>
+<li>Check log files</li>
+<li>Clear cache</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Class 'ezxFormToken' not found</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Usually found with fresh installations involving legacy extensions</li>
+<li>Regenerate Autoloads</li>
+</ul>
+<pre class="prettyprint" data-lang="bash">
+$ cd ezpublish_legacy
+$ php bin/php/ezpgenerateautoloads.php -e -p
+</pre>
+
+<p>title: Pitfalls
+subtitle: Avoid the traps...
+class: segue dark nobackground</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>TODO Pitfalls einzelne Slides</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Stash</li>
+<li>ESI request length</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2></h2>
+      <h3></h3>
+    </hgroup>
+    <article ></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>MultiSite Setup</h2>
+      <h3></h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>TODO Multisite Setup einzelne Slides</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Symfony Way</li>
+<li>CJW Way</li>
+</ul></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>Old Stuff follows...</h2>
+      <h3></h3>
+    </hgroup>
+  
 </slide>
 
 <slide  >
