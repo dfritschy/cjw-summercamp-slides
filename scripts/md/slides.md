@@ -4,28 +4,27 @@ build_lists: true
 
 <!---
 
-  eZ Summercamp 2013 Talk
+  eZ Summercamp 2014 Talk
 
-  How we started with eZ Publish 5 - A real use case
-  A cookbook for successful migration from eZ 4 to the Symfony stack
+  Learnings from Real eZ Publish 5 Projects
 
-  (c) 2013 Ekkehard Dörre, Donat Fritschy
+  (c) 2014 Ekkehard Dörre, Donat Fritschy
 
 -->
 
 * <strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.
-* <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box.
+* <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.
 * Members of CJW Network
 
 ---
 
-title: Why a Cookbook?
+title: Learnings from Real eZ Publish 5 Projects
 class: big
 build_lists: true
 
-- eZ Publish 5 allows for a smooth migration of eZ legacy projects to the Symfony stack, permitting them to profit from the exiting new possibilities
-- However, it is a completely new beast
-- This workshop presents some basic recipes for beginners
+- Last year we have presented our Cookbok
+- In the meantime we have realized a couple of larger and smaller eZ 5 projects
+- We want to share these experiences
 
 ---
 
@@ -35,37 +34,138 @@ build_lists: true
 
 Things we'll cover:
 
-- eZ 5 Installation
-- Building our first Bundle
-- Overriding the Page Layout Template
-- Integrating old Templates
-- Overriding Content Type (formerly Class) Templates
-- Overriding Field Type (formerly Attribute) Templates
-- One more thing...
+- Best Practice
+- Debugging
+- Pitfalls
+
+- MultiSite Setup
 
 ---
 
-title: Installation
-subtitle: Prepare the ingredients...
+title: Best Practice
+subtitle:
 class: segue dark nobackground
 
 ---
 
-title: eZ 5 Installation
+title: TODO einzelne Slides
 
-```
-Recipe #1: Use the installation package
-```
-
-- Use the installation packages from [share.ez.no][1]
-- These are consistent and tested
-- Everybody knows about what you speak
-- Forking from [GitHub][2] is great, if you want and are able to contribute
-
-[1]: http://share.ez.no/downloads
-[2]: https://github.com/ezsystems/ezpublish-community
+- Project Layout
+- Config Files
+- Controller per Full View
+- Base Bundle
 
 ---
+
+title: Debugging
+subtitle: Coping with blank screens
+class: segue dark nobackground
+
+---
+
+title: Blank screen, "503 Service not available"
+
+* PHP errors (Syntax error, Memory, Outdated Autoloads, ...)
+* Configuration errors (DB connection, ...)
+
+* Switch to DEV mode for better debugging
+* Check the log files
+<pre>
+    Apache/PHP Log
+    ezpublish/logs/&lt;env&gt;.log
+    ezpublish_legacy/var/log/\*
+    ezpublish_legacy/var/&lt;siteaccess&gt;/log/\*
+</pre>
+* Check write permissions on log files!
+
+---
+
+title: TwigBundle:Exception:error500.html.twig
+
+* NEVER a Twig error!
+* Caused by response 500 "Internal Server Error" and missing error template
+
+* Checks as before
+
+---
+
+title: Twig Exception: Invalid variation "&lt;variation&gt;"
+
+Caused by problems when accessing images
+
+* Check if the file exists
+* Check permissions on `ezpublish_legacy/var/<siteaccess>/storage`
+* Check log files
+* Clear cache
+
+---
+
+title: Class 'ezxFormToken' not found
+
+* Usually found with fresh installations involving legacy extensions
+* Regenerate Autoloads
+
+<pre class="prettyprint" data-lang="bash">
+$ cd ezpublish_legacy
+$ php bin/php/ezpgenerateautoloads.php -e -p
+</pre>
+
+---
+
+title: Pitfalls
+subtitle: Avoid the traps...
+class: segue dark nobackground
+
+---
+
+title: Memory limit exceeded in DEV mode
+
+* DEV mode takes a lot of memory
+* Stash Logging is the worst
+* Disable Stash Logging in ezpublish.yml
+
+<pre class="prettyprint" data-lang="yml">
+stash:
+    <b>logging: false</b>
+    caches:
+        default:
+            handlers:
+                - FileSystem
+            inMemory: true
+            registerDoctrineAdapter: false
+</pre>
+
+---
+
+title: 414 Request-URI Too Long
+
+When doing subrequests, particularly ESI or Hinclude ones, current SiteAccess is transmitted in a serialized form, with its matcher. With a large number of configured SiteAccesses using Map\Host or Map\URI matcher (around 40, which is not uncommon for a multi-national, multi-lingual site) the URL can exceed the size of 8192 Bytes which most servers accept. As a result, the ESI/Hinclude call fails.
+
+* Fixed in Version 5.3.3 (2014.07)
+* <https://jira.ez.no/browse/EZP-23168>
+* <https://github.com/ezsystems/ezpublish-kernel/pull/949>
+
+---
+
+title: MultiSite Setup
+subtitle:
+class: segue dark nobackground
+
+---
+
+title: TODO Multisite Setup einzelne Slides
+
+- Symfony Way
+- CJW Way
+
+---
+
+title: Old Stuff follows...
+subtitle:
+class: segue dark nobackground
+
+
+----
 
 title: eZ 5 Installation
 

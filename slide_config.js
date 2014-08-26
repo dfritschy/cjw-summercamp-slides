@@ -1,8 +1,8 @@
 var SLIDE_CONFIG = {
   // Slide settings
   settings: {
-    title: 'How we started with eZ Publish 5<br>A real use case',
-    subtitle: ' A cookbook for successful migration from eZ 4 to the Symfony stack',
+    title: 'Learnings from Real eZ Publish 5 Projects',
+    subtitle: 'Blood, Sweat and Tears',
     /*eventInfo: {
       title: 'eZ Summercamp 2013',
      date: '4. September 2013'
@@ -17,7 +17,7 @@ var SLIDE_CONFIG = {
       'Open Sans:regular,semibold,italic,italicsemibold',
       'Source Code Pro'
     ],
-    theme: ['cjw'], // Add your own custom themes or styles in /theme/css. Leave off the .css extension.
+    theme: ['cjw'] // Add your own custom themes or styles in /theme/css. Leave off the .css extension.
   },
 
   // Author information
