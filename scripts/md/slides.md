@@ -268,15 +268,129 @@ title: Cache Recommendations
 
 ---
 
-title: MultiSite Setup
+title: Multi-Site/Multi-Repository Setup
 subtitle:
 class: segue dark nobackground
 
 ---
 
-title: TODO Multisite Setup einzelne Slides
+title: Why a Multi-Site/Multi-Repository Setup?
 
-- Symfony Way
-- CJW Way
+* At CJW Network we have developed a multi-site/multi-repository setup for eZ Publish 4 several years ago
+* This allows us to host many individual sites on a single eZ Publish installation
+
+Advantages:
+
+* Central site administration (site activation, cronjobs, ...)
+* Easy deployment (update site extension with Subversion)
+* Highly reduced maintenance costs (security patches, upgrades)
+* Highly efficient use of hardware resources
+
+Disadvantages:
+
+* Some Kernel patches needed
 
 ---
+
+title: Multi-Site/Multi-Repository Setup in eZ 5
+
+First Approach (proven in production)
+
+* Use different `ezpublish` directories to host the different sites
+
+Second approach (under development)
+
+* Use `CJW MultiSiteBundle`
+
+---
+
+title: TODO EKKE
+
+---
+
+title: Introducing CJW MultiSiteBundle
+build_lists: true
+
+Although the first approach works fine, it has several drawbacks:
+
+* Application code scattered at different places (site directory, bundle, legacy extension), hard to maintain in VCS, hard to deploy
+* Redundancy in config files
+* No global settings
+* No central site activation/administration
+
+Goal: keep everything in one place!
+
+---
+
+title: CJW MultiSiteBundle Features
+
+* Boots kernel and environment based on domain name mappings
+* Allows for global activation of bundles
+* Allows for global settings
+* Provides a common console for all sites
+* Caches domain name mappings
+* Moves cache and log files away from the ezpublish folder
+* more to come ...
+
+---
+
+title: cjwpublish Directory
+
+The `cjwpublish` application directory sits next to the `ezpublish` directory.
+
+<pre class="">
+cjwpublish
+&#8990; config
+    cjwpublish.yml                  &lt;-- defines active bundles
+    config.yml                      &lt;-- allows for global settings
+  CjwPublishKernel.php              &lt;-- inherits from CjwMultiSiteKernel.php
+  CjwPublishCache.php               &lt;-- inherits from CjwMultiSiteCache.php
+  console
+</pre>
+
+---
+
+title: Symfony's app directory is back
+
+Site Bundle Directory Layout
+
+<pre class="">
+src
+&#8990; Cjw
+  &#8990; SiteExample
+    &#8990; app
+      &#8990; config
+          cjwpublish.yml            &lt;-- contains domain mappings
+          config.yml
+          ezpublish.yml
+          ...
+        CjwSiteExampleKernel.php    &lt;-- inherits from CjwPublishKernel.php
+        CjwSiteExampleCache.php     &lt;-- inherits from CjwPublishCache.php
+    &#8990; Controller
+      ...
+</pre>
+
+---
+
+title: Caveats
+
+Adjustments needed in `config.yml` to reflect different relative location of kernel
+
+<pre class="prettyprint" data-lang="yml">
+assetic:
+    ...
+    read_from:      %kernel.root_dir%/../../../../web
+    write_to:       %kernel.root_dir%/../../../../web
+    ...
+ez_publish_legacy:
+    ...
+    root_dir: %kernel.root_dir%/../../../../ezpublish_legacy
+
+parameters:
+    ezpublish.kernel.root_dir: %kernel.root_dir%/../../../../vendor/ezsystems/ezpublish-kernel
+</pre>
+
+**More problems of this kind expected!**
+
+---
+

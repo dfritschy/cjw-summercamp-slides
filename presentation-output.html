@@ -421,7 +421,7 @@ $kernel->terminate( $request, $response );
   
     <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
     <hgroup class="auto-fadein">
-      <h2>MultiSite Setup</h2>
+      <h2>Multi-Site/Multi-Repository Setup</h2>
       <h3></h3>
     </hgroup>
   
@@ -430,13 +430,155 @@ $kernel->terminate( $request, $response );
 <slide  >
   
     <hgroup>
-      <h2>TODO Multisite Setup einzelne Slides</h2>
+      <h2>Why a Multi-Site/Multi-Repository Setup?</h2>
       <h3></h3>
     </hgroup>
     <article ><ul>
-<li>Symfony Way</li>
-<li>CJW Way</li>
+<li>At CJW Network we have developed a multi-site/multi-repository setup for eZ Publish 4 several years ago</li>
+<li>This allows us to host many individual sites on a single eZ Publish installation</li>
+</ul>
+<p>Advantages:</p>
+<ul>
+<li>Central site administration (site activation, cronjobs, ...)</li>
+<li>Easy deployment (update site extension with Subversion)</li>
+<li>Highly reduced maintenance costs (security patches, upgrades)</li>
+<li>Highly efficient use of hardware resources</li>
+</ul>
+<p>Disadvantages:</p>
+<ul>
+<li>Some Kernel patches needed</li>
 </ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Multi-Site/Multi-Repository Setup in eZ 5</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>First Approach (proven in production)</p>
+<ul>
+<li>Use different <code>ezpublish</code> directories to host the different sites</li>
+</ul>
+<p>Second approach (under development)</p>
+<ul>
+<li>Use <code>CJW MultiSiteBundle</code></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>TODO EKKE</h2>
+      <h3></h3>
+    </hgroup>
+    <article ></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Introducing CJW MultiSiteBundle</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Although the first approach works fine, it has several drawbacks:</p>
+<ul class="build">
+<li>Application code scattered at different places (site directory, bundle, legacy extension), hard to maintain in VCS, hard to deploy</li>
+<li>Redundancy in config files</li>
+<li>No global settings</li>
+<li>No central site activation/administration</li>
+</ul>
+<p>Goal: keep everything in one place!</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>CJW MultiSiteBundle Features</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Boots kernel and environment based on domain name mappings</li>
+<li>Allows for global activation of bundles</li>
+<li>Allows for global settings</li>
+<li>Provides a common console for all sites</li>
+<li>Caches domain name mappings</li>
+<li>Moves cache and log files away from the ezpublish folder</li>
+<li>more to come ...</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>cjwpublish Directory</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>The <code>cjwpublish</code> application directory sits next to the <code>ezpublish</code> directory.</p>
+<pre class="">
+cjwpublish
+&#8990; config
+    cjwpublish.yml                  &lt;-- defines active bundles
+    config.yml                      &lt;-- allows for global settings
+  CjwPublishKernel.php              &lt;-- inherits from CjwMultiSiteKernel.php
+  CjwPublishCache.php               &lt;-- inherits from CjwMultiSiteCache.php
+  console
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Symfony's app directory is back</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Site Bundle Directory Layout</p>
+<pre class="">
+src
+&#8990; Cjw
+  &#8990; SiteExample
+    &#8990; app
+      &#8990; config
+          cjwpublish.yml            &lt;-- contains domain mappings
+          config.yml
+          ezpublish.yml
+          ...
+        CjwSiteExampleKernel.php    &lt;-- inherits from CjwPublishKernel.php
+        CjwSiteExampleCache.php     &lt;-- inherits from CjwPublishCache.php
+    &#8990; Controller
+      ...
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Caveats</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Adjustments needed in <code>config.yml</code> to reflect different relative location of kernel</p>
+<pre class="prettyprint" data-lang="yml">
+assetic:
+    ...
+    read_from:      %kernel.root_dir%/../../../../web
+    write_to:       %kernel.root_dir%/../../../../web
+    ...
+ez_publish_legacy:
+    ...
+    root_dir: %kernel.root_dir%/../../../../ezpublish_legacy
+
+parameters:
+    ezpublish.kernel.root_dir: %kernel.root_dir%/../../../../vendor/ezsystems/ezpublish-kernel
+</pre>
+
+<p><strong>More problems of this kind expected!</strong></p></article>
  
 </slide>
 
