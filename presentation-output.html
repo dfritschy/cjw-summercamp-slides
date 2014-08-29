@@ -61,8 +61,8 @@ URL: https://code.google.com/p/io-2012-slides
 -->
 
 <ul class="build">
-<li><strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.</li>
 <li><strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.</li>
+<li><strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.</li>
 <li>Members of CJW Network</li>
 </ul></article>
  
@@ -75,9 +75,13 @@ URL: https://code.google.com/p/io-2012-slides
       <h3></h3>
     </hgroup>
     <article ><ul class="build">
-<li>Last year we have presented our Cookbok</li>
-<li>In the meantime we have realized a couple of larger and smaller eZ 5 projects</li>
-<li>We want to share these experiences</li>
+<li>Last year we have presented our Cookbok...</li>
+<li>
+<p>... today you get a Ratatouille ;-)</p>
+</li>
+<li>
+<p>Let's share the experiences you and we made in the last year!</p>
+</li>
 </ul></article>
  
 </slide>
@@ -88,16 +92,13 @@ URL: https://code.google.com/p/io-2012-slides
       <h2>Agenda</h2>
       <h3></h3>
     </hgroup>
-    <article ><p>Things we'll cover:</p>
+    <article ><p>Things we would like to discuss:</p>
 <ul class="build">
-<li>Best Practice</li>
+<li>Good Practice</li>
+<li>ez View Cache vs. HTTP Cache</li>
 <li>Debugging</li>
-<li>
-<p>Pitfalls</p>
-</li>
-<li>
-<p>MultiSite Setup</p>
-</li>
+<li>Pitfalls</li>
+<li>MultiSite Setup</li>
 </ul></article>
  
 </slide>
@@ -106,7 +107,7 @@ URL: https://code.google.com/p/io-2012-slides
   
     <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
     <hgroup class="auto-fadein">
-      <h2>Best Practice</h2>
+      <h2>Good Practice</h2>
       <h3></h3>
     </hgroup>
   
@@ -115,14 +116,429 @@ URL: https://code.google.com/p/io-2012-slides
 <slide  >
   
     <hgroup>
-      <h2>TODO einzelne Slides</h2>
+      <h2>Team up with a Symfony Crack</h2>
       <h3></h3>
     </hgroup>
     <article ><ul>
-<li>Project Layout</li>
-<li>Config Files</li>
-<li>Controller per Full View</li>
-<li>Base Bundle</li>
+<li>To be honest: as eZ 4 developers, we are complete novices in eZ 5</li>
+<li>It's easier for a Smyfony Crack to learn eZ than other way round</li>
+<li>Symfony community is hungry for a CMS, so watch out for new competition</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Think in MVC</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>A radical different thinking</li>
+<li>eZ 4 mangeled all together in the TPL -&gt; the view implemented the logic (fetch)</li>
+<li>Symfony enforces a clean separation, from routing to the controller to the rendering of the view</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Think in Bundles</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Split your application in different bundles (site specific, functional, ...)</li>
+<li>Reuse your code: create and maintain a Base Bundle with general functions</li>
+</ul>
+<p>Creating bundles is easy, don't work in the DemoBundle ;-)</p>
+<pre class="prettyprint" data-lang="bash">
+$ php ezpublish/console generate:bundle
+</pr></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Organize your config files</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>The standard eZ installation is a mess...</li>
+<li>... and the DemoBundle only slowly becoming a source of good practice</li>
+</ul>
+<p>Our approach</p>
+<ul>
+<li>keep config in <code>ezpublish/config</code> as general as possible</li>
+<li>it should merely decribe your environment, not the application</li>
+<li>move all site/function specific settings to the bundle</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Keep ezpublish.yml small</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>ezpublish/config/ezpublish.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+imports:
+    - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
+</pre>
+
+<p>Keep these sections:</p>
+<ul>
+<li>doctrine (Database)</li>
+<li>ezpublish (Siteaccess Matching, Siteaccesses, Languages, Caching)</li>
+<li>stash</li>
+</ul>
+<p>Can even be shorter - get inspiration from <a href="https://github.com/lolautruche/metalfrance">https://github.com/lolautruche/metalfrance</a></p>
+<p><em>Note: prepending configuration does not work well with parameters</em></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Config Files in Bundle</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>We keep them in a separate directory and name them as in good old eZ...</p>
+<pre>
+ExampleBundle
+&#8990; Resources
+  &#8990; config
+    &#8990; ezpublish
+        image.yml
+        override.yml
+      ezpublish.yml
+      parameters.yml
+      routing.yml
+      services.yml
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Controllers</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>After several tries, we ended up with...</p>
+<ul>
+<li>Basically one controller per full view</li>
+<li>Separate controllers for navigation etc.</li>
+<li>Retrieve all needed data (location, children, ...)</li>
+<li>Prepare the data for easy processing in the templates</li>
+<li>Consider caching (TTL, X-Location Header)</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Ways to Fetch Content</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>SearchService::findContent()</li>
+<li>
+<p>SearchService::findLocations()</p>
+</li>
+<li>
+<p>LocationService::loadLocationChildren()</p>
+</li>
+<li>
+<p>Legacy fetch functions</p>
+</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>SearchService::findContent()</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>The only <code>SearchService</code> function you will find in <code>DemoBundle</code></p>
+<ul class="build">
+<li>returns full <code>content</code> objects with ALL attributes in ALL languages</li>
+<li>scales very badly</li>
+<li>
+<p>no <code>asObjects</code> flag as in eZ 4</p>
+</li>
+<li>
+<p>fetching a content tree with 116 locations took 30 seconds</p>
+</li>
+<li>most of the time is spent in manipulating the SQL result in PHP</li>
+<li>Another test: 24 hits, PHP array 44'880 rows with 39 elements each, highly redundant</li>
+</ul>
+<p><a href="http://share.ez.no/blogs/donat-fritschy/searchservice-performance">http://share.ez.no/blogs/donat-fritschy/searchservice-performance</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>SearchService::findLocations()</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><strong>Available from 2014.05 / 5.3 only</strong></p>
+<p>Roughly equivalent to good old <code>fetch( 'content', 'list' )</code></p>
+<ul class="build">
+<li>returns <code>location</code> objects with <code>contentInfo</code> only</li>
+<li>fetching a content tree with 116 locations took &lt; 1 second</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>LocationService::loadLocationChildren()</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>&laquo;Think of <code>LocationService::loadLocationChildren()</code> as primarily intended for administration interface.&raquo;</p>
+<p>&laquo;If what it offers suits you for the frontend as well, great, but otherwise you will have to use SearchService. In other words, this method will not get filtering capabilities.&raquo;</p>
+<p><em>(From a discussion with Petar)</em></p>
+<p><a href="http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service">http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service</a></p></article>
+ 
+</slide>
+
+<slide class="smaller" >
+  
+    <hgroup>
+      <h2>Legacy Fetch Functions</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="prettyprint" data-lang="php">
+use eZFunctionHandler;
+...
+$mySearchResults = $this->getLegacyKernel()->runCallback(
+    function () use ( $searchPhrase, $sort, $contentTypeIdenfiers )
+    {
+        // eZFunctionHandler::execute is the equivalent for a legacy template fetch function
+        // The following is the same than fetch( 'ezfind', 'search', hash(...) )
+        return eZFunctionHandler::execute(
+            'ezfind',
+            'search',
+            array(
+                'query'     => $searchPhrase,
+                'sort_by'   => $sort,
+                'class_id'  => $contentTypeIdenfiers
+            )
+        );
+    }
+);
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>TWIG Templates</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>A generalized full and line view template for the easy stuff</li>
+<li>And again, basically one template per full view</li>
+</ul>
+<p>How to hande children (sub items)?</p>
+<ul>
+<li>render directly in the template - the data is usally already there</li>
+<li>use <code>{{ render( controller( 'ez_content:viewLocation', {'locationId': child.id, 'viewType': 'line'} )) }}</code></li>
+</ul>
+<p>When to use ESI?</p>
+<ul>
+<li>nice concept, but quite a big overhead</li>
+<li>better suited for larger chunks</li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>How to organize Templates?</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>The Symfony way...</p>
+<pre>
+views
+&#8990; Customer
+    CustomerDetail.html.twig
+&#8990; Product
+</pre>
+
+<p>The classic eZ way...</p>
+<pre>
+views
+&#8990; full
+    customer.html.twig
+&#8990; line
+</pre>
+
+<p>Two approaches, both valid. Follow your taste.</p></article>
+ 
+</slide>
+
+<slide class="segue dark nobackground" >
+  
+    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
+    <hgroup class="auto-fadein">
+      <h2>eZ View Cache vs. HTTP Caching</h2>
+      <h3></h3>
+    </hgroup>
+  
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ View Caching</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>When the pagelayout is rendered, the <code>{$module_result.content}</code> part will be replaced with the actual output. If view caching is enabled, the entire result of the module will be cached. This means that the contents of the "module_result" variable will be put into a cache file (...)</p>
+<p>When a new version (...) of an object is published, the system will automatically clear the view cache for the following items:</p>
+<ul>
+<li>All published nodes of the object</li>
+<li>The parent nodes</li>
+<li>Related nodes (keywords, object relations)</li>
+</ul>
+<p><a href="https://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/View-caching">https://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/View-caching</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>HTTP Expiration and Validation</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>The HTTP specification defines two caching models:</p>
+<ul class="build">
+<li>With the <strong>expiration model</strong>, you simply specify how long a response should be considered "fresh" by including a Cache-Control and/or an Expires header. Caches that understand expiration will not make the same request until the cached version reaches its expiration time and becomes "stale";</li>
+<li>When pages are really dynamic (i.e. their representation changes often), the <strong>validation model</strong> is often necessary. With this model, the cache stores the response, but asks the server on each request whether or not the cached response is still valid. The application uses a unique response identifier (the Etag header) and/or a timestamp (the Last-Modified header) to check if the page has changed since being cached.</li>
+</ul>
+<p><a href="http://symfony.com/doc/current/book/http_cache.html">http://symfony.com/doc/current/book/http_cache.html</a></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>In Short (and much simplified...)</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>eZ View Cache caches <strong>content</strong> and <strong>content fragements</strong></p>
+<ul>
+<li>Standard TTL is 2 hours</li>
+<li>Is purged on content modifications (with smart cache clearing rules)</li>
+</ul>
+<p>Symfony's HTTP Cache caches <strong>requests</strong></p>
+<ul>
+<li>eZ uses Expiration model by default</li>
+<li>Standard TTL is 60 seconds (86400 for tree menu!)</li>
+<li>Symfony Cache is purged from backend, <strong>but only for ONE location</strong></li>
+</ul>
+<p>Let's dive in a bit deeper...</p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>ez 4 Cache Directives</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Code from <code>ezpublish_legacy/kernel/private/classes/ezpkernelweb.php</code></p>
+<pre class="prettyprint" data-lang="php">
+// send header information
+foreach (
+    eZHTTPHeader::headerOverrideArray( $this->uri ) +
+    array(
+        <b>'Expires' => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        'Last-Modified' => gmdate( 'D, d M Y H:i:s' ) . ' GMT',
+        'Cache-Control' => 'no-cache, must-revalidate',
+        'Pragma' => 'no-cache',</b>
+        ...
+      ) as $key => $value
+)
+{
+    header( $key . ': ' . $value );
+}
+</pre>
+
+<p><strong>This guarantees that every request is handled by eZ</strong></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>eZ 5 Cache Directives</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Code from <code>vendor/ezsystems/demobundle/EzSystems/DemoBundle/Controller/DemoController.php</code></p>
+<pre class="prettyprint" data-lang="php">
+// Setting HTTP cache for the response to be public and with a TTL of 1 day.
+$response = new Response;
+$response->setPublic();
+$response->setSharedMaxAge( 86400 );
+// Menu will expire when top location cache expires.
+$response->headers->set( 'X-Location-Id', $rootLocationId );
+// Menu might vary depending on user permissions, so make the cache vary on the user hash.
+$response->setVary( 'X-User-Hash' );
+</pre>
+
+<p><strong>This effectively sets the Response free, out of the reach of eZ</strong></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Emulating eZ 4 Cache behaviour in eZ 5</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>This patch to <code>index.php</code> disables client and proxy caching without sacrifying the benefits of the Symfony HTTP cache. Use at own risk!</p>
+<pre class="prettyprint" data-lang="php">
+$response = $kernel->handle( $request );
+<b>
+// Emulate eZ 4 cache control
+$response->headers->set( 'Cache-Control', 'no-cache, must-revalidate' );
+</b>
+$response->send();
+$kernel->terminate( $request, $response );
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Cache Recommendations</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul>
+<li>Read the specifications</li>
+<li>Use Shared Caches with caution</li>
+<li>Set TTL values low enough</li>
+<li>Cave: <code>setTtl()</code> vs. <code>setClientTtl</code></li>
+<li>
+<p>For higher traffic sites, use Varnish</p>
+</li>
+<li>
+<p><a href="http://tools.ietf.org/html/rfc2616#page-74">http://tools.ietf.org/html/rfc2616#page-74</a></p>
+</li>
+<li><a href="https://www.mnot.net/cache_docs/">https://www.mnot.net/cache_docs/</a></li>
 </ul></article>
  
 </slide>
@@ -267,160 +683,6 @@ stash:
   
     <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
     <hgroup class="auto-fadein">
-      <h2>eZ View Cache vs. HTTP Caching</h2>
-      <h3></h3>
-    </hgroup>
-  
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>eZ View Caching</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>When the pagelayout is rendered, the <code>{$module_result.content}</code> part will be replaced with the actual output. If view caching is enabled, the entire result of the module will be cached. This means that the contents of the "module_result" variable will be put into a cache file (...)</p>
-<p>When a new version (...) of an object is published, the system will automatically clear the view cache for the following items:</p>
-<ul>
-<li>All published nodes of the object</li>
-<li>The parent nodes</li>
-<li>Related nodes (keywords, object relations)</li>
-</ul>
-<p><a href="https://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/View-caching">https://doc.ez.no/eZ-Publish/Technical-manual/4.x/Features/View-caching</a></p></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>HTTP Expiration and Validation</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>The HTTP specification defines two caching models:</p>
-<ul>
-<li>With the <strong>expiration model</strong>, you simply specify how long a response should be considered "fresh" by including a Cache-Control and/or an Expires header. Caches that understand expiration will not make the same request until the cached version reaches its expiration time and becomes "stale";</li>
-<li>When pages are really dynamic (i.e. their representation changes often), the <strong>validation model</strong> is often necessary. With this model, the cache stores the response, but asks the server on each request whether or not the cached response is still valid. The application uses a unique response identifier (the Etag header) and/or a timestamp (the Last-Modified header) to check if the page has changed since being cached.</li>
-</ul>
-<p><a href="http://symfony.com/doc/current/book/http_cache.html">http://symfony.com/doc/current/book/http_cache.html</a></p></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>In Short (and much simplified...)</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>eZ View Cache caches <strong>content</strong> and <strong>content fragements</strong></p>
-<ul>
-<li>Standard TTL is 2 hours</li>
-<li>Is purged on content modifications (with smart cache clearing rules)</li>
-</ul>
-<p>Symfony's HTTP Cache caches <strong>requests</strong></p>
-<ul>
-<li>eZ uses Expiration model by default</li>
-<li>Standard TTL is 60 seconds (86400 for tree menu!)</li>
-<li>Symfony Cache is purged from backend, <strong>but only for ONE location</strong></li>
-</ul>
-<p>Let's dive in a bit deeper...</p></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>ez 4 Cache Directives</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>Code from <code>ezpublish_legacy/kernel/private/classes/ezpkernelweb.php</code></p>
-<pre class="prettyprint" data-lang="php">
-// send header information
-foreach (
-    eZHTTPHeader::headerOverrideArray( $this->uri ) +
-    array(
-        <b>'Expires' => 'Mon, 26 Jul 1997 05:00:00 GMT',
-        'Last-Modified' => gmdate( 'D, d M Y H:i:s' ) . ' GMT',
-        'Cache-Control' => 'no-cache, must-revalidate',
-        'Pragma' => 'no-cache',</b>
-        ...
-      ) as $key => $value
-)
-{
-    header( $key . ': ' . $value );
-}
-</pre>
-
-<p><strong>This guarantees that every request is handled by eZ</strong></p></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>eZ 5 Cache Directives</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>Code from <code>vendor/ezsystems/demobundle/EzSystems/DemoBundle/Controller/DemoController.php</code></p>
-<pre class="prettyprint" data-lang="php">
-// Setting HTTP cache for the response to be public and with a TTL of 1 day.
-$response = new Response;
-$response->setPublic();
-$response->setSharedMaxAge( 86400 );
-// Menu will expire when top location cache expires.
-$response->headers->set( 'X-Location-Id', $rootLocationId );
-// Menu might vary depending on user permissions, so make the cache vary on the user hash.
-$response->setVary( 'X-User-Hash' );
-</pre>
-
-<p><strong>This effectively sets the Response free, out of the reach of eZ</strong></p></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>Emulating eZ 4 Cache behaviour in eZ 5</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p>This patch to <code>index.php</code> disables client and proxy caching without sacrifying the benefits of the Symfony HTTP cache. Use at own risk!</p>
-<pre class="prettyprint" data-lang="php">
-$response = $kernel->handle( $request );
-<b>
-// Emulate eZ 4 cache control
-$response->headers->set( 'Cache-Control', 'no-cache, must-revalidate' );
-</b>
-$response->send();
-$kernel->terminate( $request, $response );
-</pre></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>Cache Recommendations</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><ul>
-<li>Read the specifications</li>
-<li>Use Shared Caches with caution</li>
-<li>Set TTL values low enough</li>
-<li>Cave: <code>setTtl()</code> vs. <code>setClientTtl</code></li>
-<li>
-<p>For higher traffic sites, use Varnish</p>
-</li>
-<li>
-<p><a href="http://tools.ietf.org/html/rfc2616#page-74">http://tools.ietf.org/html/rfc2616#page-74</a></p>
-</li>
-<li><a href="https://www.mnot.net/cache_docs/">https://www.mnot.net/cache_docs/</a></li>
-</ul></article>
- 
-</slide>
-
-<slide class="segue dark nobackground" >
-  
-    <aside class="gdbar"><img src="images/cjwlogo_128.png"></aside>
-    <hgroup class="auto-fadein">
       <h2>Multi-Site/Multi-Repository Setup</h2>
       <h3></h3>
     </hgroup>
@@ -481,6 +743,99 @@ $kernel->terminate( $request, $response );
 <slide  >
   
     <hgroup>
+      <h2>Multi-Site-Setup (old) Directory structure</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="">
+ezpublish                &lt;-- not used
+ezpublish_legacy
+&#8990;extension
+ &#8990;site_customer          &lt;-- each customer has its own extension and database
+ &#8990;site_customertwo
+&#8990;var
+ &#8990;site_customer          &lt;-- each customer has its own var directory
+ &#8990;site_customertwo
+site_customer            &lt;-- each customer has its own Symfony app
+site_customertwo
+src
+&#8990;CjwNetwork
+ &#8990;SiteCustomerBundle     &lt;-- each customer has its own bundle
+ &#8990;SiteCustomertwoBundle
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Multi-Site-Setup (old) Detail ezpublish_legacy</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="">
+ezpublish_legacy
+&#8990;extension
+ &#8990;site_customer          &lt;-- each customer has its own extension
+  &#8990;classes
+  &#8990;design
+  &#8990;modules
+  &#8990;settings
+   &#8990;site.ini
+    &#8990;[DatabaseSettings]  &lt;-- each customer has its own database
+     &#8990;Database=database_site_customer
+ &#8990;site_customertwo
+  &#8990;[...]
+  &#8990;settings
+   &#8990;site.ini
+    &#8990;[DatabaseSettings]
+     &#8990;Database=database_site_customertwo
+&#8990;var
+ &#8990;site_customer          &lt;-- each customer has its own var directory
+ &#8990;site_customertwo
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Multi-Site-Setup (old) Directory structure</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="">
+site_customer
+&#8990;autoload.php
+&#8990;bootstrap.php.cache
+&#8990;cache
+&#8990;check.php
+&#8990;config    &lt;-- all yml files like ezpublish folder, (to improve)
+ &#8990;config.yml
+ &#8990;ezpublish.yml
+&#8990; parameters.yml
+&#8990;console
+&#8990;logs
+&#8990;phpunit.xml.dist
+&#8990;Resources
+&#8990;sessions
+&#8990;SiteCjwbaseCache.php
+&#8990;SiteCjwbaseKernel.php
+&#8990;SymfonyRequirements.php
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>END TODO EKKE</h2>
+      <h3></h3>
+    </hgroup>
+    <article ></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
       <h2>Introducing CJW MultiSiteBundle</h2>
       <h3></h3>
     </hgroup>
@@ -489,9 +844,13 @@ $kernel->terminate( $request, $response );
 <li>Application code scattered at different places (site directory, bundle, legacy extension), hard to maintain in VCS, hard to deploy</li>
 <li>Redundancy in config files</li>
 <li>No global settings</li>
-<li>No central site activation/administration</li>
-</ul>
-<p>Goal: keep everything in one place!</p></article>
+<li>
+<p>No central site activation/administration</p>
+</li>
+<li>
+<p>Goal: keep everything in one place!</p>
+</li>
+</ul></article>
  
 </slide>
 
@@ -501,8 +860,9 @@ $kernel->terminate( $request, $response );
       <h2>CJW MultiSiteBundle Features</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
+    <article ><ul class="build">
 <li>Boots kernel and environment based on domain name mappings</li>
+<li>Handles local, staging and live domain names</li>
 <li>Allows for global activation of bundles</li>
 <li>Allows for global settings</li>
 <li>Provides a common console for all sites</li>
@@ -542,7 +902,7 @@ cjwpublish
 <pre class="">
 src
 &#8990; Cjw
-  &#8990; SiteExample
+  &#8990; SiteExampleBundle
     &#8990; app
       &#8990; config
           cjwpublish.yml            &lt;-- contains domain mappings
@@ -585,10 +945,43 @@ parameters:
 <slide  >
   
     <hgroup>
-      <h2></h2>
+      <h2>Project Status</h2>
       <h3></h3>
     </hgroup>
-    <article ></article>
+    <article ><ul>
+<li>Currently in private Beta, not yet released</li>
+<li>Ideas and Feedback welcome</li>
+<li>
+<p>Public Beta in October</p>
+</li>
+<li>
+<p><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#99;&#106;&#119;&#45;&#110;&#101;&#116;&#119;&#111;&#114;&#107;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#99;&#106;&#119;&#45;&#110;&#101;&#116;&#119;&#111;&#114;&#107;&#46;&#99;&#111;&#109;</a></p>
+</li>
+<li><a href="https://github.com/cjw-network/MultiSiteBundle">https://github.com/cjw-network/MultiSiteBundle</a></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Ressources</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Slides as PDF</p>
+<ul>
+<li>see <code>src/Cjw/SummerCampBundle/Resources/doc</code></li>
+<li><a href="https://github.com/cjw-network/SummerCampBundle/Resources/doc">https://github.com/cjw-network/SummerCampBundle/Resources/doc</a></li>
+</ul>
+<p>Slides (Source)</p>
+<ul>
+<li><a href="https://github.com/dfritschy/cjw-summercamp-slides">https://github.com/dfritschy/cjw-summercamp-slides</a></li>
+</ul>
+<p>CJW MultiSiteBundle</p>
+<ul>
+<li><a href="https://github.com/cjw-network/MultiSiteBundle">https://github.com/cjw-network/MultiSiteBundle</a></li>
+<li><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#105;&#110;&#102;&#111;&#64;&#99;&#106;&#119;&#45;&#110;&#101;&#116;&#119;&#111;&#114;&#107;&#46;&#99;&#111;&#109;">&#105;&#110;&#102;&#111;&#64;&#99;&#106;&#119;&#45;&#110;&#101;&#116;&#119;&#111;&#114;&#107;&#46;&#99;&#111;&#109;</a></li>
+</ul></article>
  
 </slide>
 

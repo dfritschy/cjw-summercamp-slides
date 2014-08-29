@@ -12,8 +12,8 @@ build_lists: true
 
 -->
 
-* <strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.
 * <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.
+* <strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.
 * Members of CJW Network
 
 ---
@@ -22,9 +22,10 @@ title: Learnings from Real eZ Publish 5 Projects
 class: big
 build_lists: true
 
-- Last year we have presented our Cookbok
-- In the meantime we have realized a couple of larger and smaller eZ 5 projects
-- We want to share these experiences
+- Last year we have presented our Cookbok...
+- ... today you get a Ratatouille ;-)
+
+- Let's share the experiences you and we made in the last year!
 
 ---
 
@@ -32,118 +33,233 @@ title: Agenda
 class: big
 build_lists: true
 
-Things we'll cover:
+Things we would like to discuss:
 
-- Best Practice
+- Good Practice
+- ez View Cache vs. HTTP Cache
 - Debugging
 - Pitfalls
-
 - MultiSite Setup
 
 ---
 
-title: Best Practice
+title: Good Practice
 subtitle:
 class: segue dark nobackground
 
 ---
 
-title: TODO einzelne Slides
+title: Team up with a Symfony Crack
 
-- Project Layout
-- Config Files
-- Controller per Full View
-- Base Bundle
-
----
-
-title: Debugging
-subtitle: Coping with blank screens
-class: segue dark nobackground
+- To be honest: as eZ 4 developers, we are complete novices in eZ 5
+- It's easier for a Smyfony Crack to learn eZ than other way round
+- Symfony community is hungry for a CMS, so watch out for new competition
 
 ---
 
-title: Blank screen, "503 Service not available"
+title: Think in MVC
 
-* PHP errors (Syntax error, Memory, Outdated Autoloads, ...)
-* Configuration errors (DB connection, ...)
-
-* Switch to DEV mode for better debugging
-* Check the log files
-<pre>
-    Apache/PHP Log
-    ezpublish/logs/&lt;env&gt;.log
-    ezpublish_legacy/var/log/\*
-    ezpublish_legacy/var/&lt;siteaccess&gt;/log/\*
-</pre>
-* Check write permissions on log files!
+- A radical different thinking
+- eZ 4 mangeled all together in the TPL -&gt; the view implemented the logic (fetch)
+- Symfony enforces a clean separation, from routing to the controller to the rendering of the view
 
 ---
 
-title: TwigBundle:Exception:error500.html.twig
+title: Think in Bundles
 
-* NEVER a Twig error!
-* Caused by response 500 "Internal Server Error" and missing error template
+- Split your application in different bundles (site specific, functional, ...)
+- Reuse your code: create and maintain a Base Bundle with general functions
 
-* Checks as before
-
----
-
-title: Twig Exception: Invalid variation "&lt;variation&gt;"
-
-Caused by problems when accessing images
-
-* Check if the file exists
-* Check permissions on `ezpublish_legacy/var/<siteaccess>/storage`
-* Check log files
-* Clear cache
-
----
-
-title: Class 'ezxFormToken' not found
-
-* Usually found with fresh installations involving legacy extensions
-* Regenerate Autoloads
+Creating bundles is easy, don't work in the DemoBundle ;-)
 
 <pre class="prettyprint" data-lang="bash">
-$ cd ezpublish_legacy
-$ php bin/php/ezpgenerateautoloads.php -e -p
-</pre>
+$ php ezpublish/console generate:bundle
+</pr>
 
 ---
 
-title: Pitfalls
-subtitle: Avoid the traps...
-class: segue dark nobackground
+title: Organize your config files
+
+- The standard eZ installation is a mess...
+- ... and the DemoBundle only slowly becoming a source of good practice
+
+Our approach
+
+- keep config in `ezpublish/config` as general as possible
+- it should merely decribe your environment, not the application
+- move all site/function specific settings to the bundle
 
 ---
 
-title: Memory limit exceeded in DEV mode
+title: Keep ezpublish.yml small
 
-* DEV mode takes a lot of memory
-* Stash Logging is the worst
-* Disable Stash Logging in ezpublish.yml
+`ezpublish/config/ezpublish.yml`
 
 <pre class="prettyprint" data-lang="yml">
-stash:
-    <b>logging: false</b>
-    caches:
-        default:
-            handlers:
-                - FileSystem
-            inMemory: true
-            registerDoctrineAdapter: false
+imports:
+    - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
+</pre>
+
+Keep these sections:
+
+- doctrine (Database)
+- ezpublish (Siteaccess Matching, Siteaccesses, Languages, Caching)
+- stash
+
+Can even be shorter - get inspiration from <https://github.com/lolautruche/metalfrance>
+
+*Note: prepending configuration does not work well with parameters*
+
+---
+
+title: Config Files in Bundle
+
+We keep them in a separate directory and name them as in good old eZ...
+
+<pre>
+ExampleBundle
+&#8990; Resources
+  &#8990; config
+    &#8990; ezpublish
+        image.yml
+        override.yml
+      ezpublish.yml
+      parameters.yml
+      routing.yml
+      services.yml
 </pre>
 
 ---
 
-title: 414 Request-URI Too Long
+title: Controllers
 
-When doing subrequests, particularly ESI or Hinclude ones, current SiteAccess is transmitted in a serialized form, with its matcher. With a large number of configured SiteAccesses using Map\Host or Map\URI matcher (around 40, which is not uncommon for a multi-national, multi-lingual site) the URL can exceed the size of 8192 Bytes which most servers accept. As a result, the ESI/Hinclude call fails.
+After several tries, we ended up with...
 
-* Fixed in Version 5.3.3 (2014.07)
-* <https://jira.ez.no/browse/EZP-23168>
-* <https://github.com/ezsystems/ezpublish-kernel/pull/949>
+- Basically one controller per full view
+- Separate controllers for navigation etc.
+- Retrieve all needed data (location, children, ...)
+- Prepare the data for easy processing in the templates
+- Consider caching (TTL, X-Location Header)
+
+---
+
+title: Ways to Fetch Content
+
+- SearchService::findContent()
+- SearchService::findLocations()
+
+- LocationService::loadLocationChildren()
+
+- Legacy fetch functions
+
+---
+
+title: SearchService::findContent()
+build_lists: true
+
+The only `SearchService` function you will find in `DemoBundle`
+
+- returns full `content` objects with ALL attributes in ALL languages
+- scales very badly
+- no `asObjects` flag as in eZ 4
+
+- fetching a content tree with 116 locations took 30 seconds
+- most of the time is spent in manipulating the SQL result in PHP
+- Another test: 24 hits, PHP array 44'880 rows with 39 elements each, highly redundant
+
+<http://share.ez.no/blogs/donat-fritschy/searchservice-performance>
+
+---
+
+title: SearchService::findLocations()
+build_lists: true
+
+**Available from 2014.05 / 5.3 only**
+
+Roughly equivalent to good old `fetch( 'content', 'list' )`
+
+- returns `location` objects with `contentInfo` only
+- fetching a content tree with 116 locations took &lt; 1 second
+
+---
+
+title: LocationService::loadLocationChildren()
+
+&laquo;Think of `LocationService::loadLocationChildren()` as primarily intended for administration interface.&raquo;
+
+&laquo;If what it offers suits you for the frontend as well, great, but otherwise you will have to use SearchService. In other words, this method will not get filtering capabilities.&raquo;
+
+*(From a discussion with Petar)*
+
+<http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service>
+
+---
+
+title: Legacy Fetch Functions
+class: smaller
+
+<pre class="prettyprint" data-lang="php">
+use eZFunctionHandler;
+...
+$mySearchResults = $this->getLegacyKernel()->runCallback(
+    function () use ( $searchPhrase, $sort, $contentTypeIdenfiers )
+    {
+        // eZFunctionHandler::execute is the equivalent for a legacy template fetch function
+        // The following is the same than fetch( 'ezfind', 'search', hash(...) )
+        return eZFunctionHandler::execute(
+            'ezfind',
+            'search',
+            array(
+                'query'     => $searchPhrase,
+                'sort_by'   => $sort,
+                'class_id'  => $contentTypeIdenfiers
+            )
+        );
+    }
+);
+</pre>
+
+---
+
+title: TWIG Templates
+
+- A generalized full and line view template for the easy stuff
+- And again, basically one template per full view
+
+
+How to hande children (sub items)?
+
+- render directly in the template - the data is usally already there
+- use `{{ render( controller( 'ez_content:viewLocation', {'locationId': child.id, 'viewType': 'line'} )) }}`
+
+When to use ESI?
+
+- nice concept, but quite a big overhead
+- better suited for larger chunks
+
+---
+
+title: How to organize Templates?
+
+The Symfony way...
+
+<pre>
+views
+&#8990; Customer
+    CustomerDetail.html.twig
+&#8990; Product
+</pre>
+
+The classic eZ way...
+
+<pre>
+views
+&#8990; full
+    customer.html.twig
+&#8990; line
+</pre>
+
+Two approaches, both valid. Follow your taste.
 
 ---
 
@@ -168,6 +284,7 @@ When a new version (...) of an object is published, the system will automaticall
 ---
 
 title: HTTP Expiration and Validation
+build_lists: true
 
 The HTTP specification defines two caching models:
 
@@ -268,6 +385,96 @@ title: Cache Recommendations
 
 ---
 
+title: Debugging
+subtitle: Coping with blank screens
+class: segue dark nobackground
+
+---
+
+title: Blank screen, "503 Service not available"
+
+* PHP errors (Syntax error, Memory, Outdated Autoloads, ...)
+* Configuration errors (DB connection, ...)
+
+* Switch to DEV mode for better debugging
+* Check the log files
+<pre>
+    Apache/PHP Log
+    ezpublish/logs/&lt;env&gt;.log
+    ezpublish_legacy/var/log/\*
+    ezpublish_legacy/var/&lt;siteaccess&gt;/log/\*
+</pre>
+* Check write permissions on log files!
+
+---
+
+title: TwigBundle:Exception:error500.html.twig
+
+* NEVER a Twig error!
+* Caused by response 500 "Internal Server Error" and missing error template
+
+* Checks as before
+
+---
+
+title: Twig Exception: Invalid variation "&lt;variation&gt;"
+
+Caused by problems when accessing images
+
+* Check if the file exists
+* Check permissions on `ezpublish_legacy/var/<siteaccess>/storage`
+* Check log files
+* Clear cache
+
+---
+
+title: Class 'ezxFormToken' not found
+
+* Usually found with fresh installations involving legacy extensions
+* Regenerate Autoloads
+
+<pre class="prettyprint" data-lang="bash">
+$ cd ezpublish_legacy
+$ php bin/php/ezpgenerateautoloads.php -e -p
+</pre>
+
+---
+
+title: Pitfalls
+subtitle: Avoid the traps...
+class: segue dark nobackground
+
+---
+
+title: Memory limit exceeded in DEV mode
+
+* DEV mode takes a lot of memory
+* Stash Logging is the worst
+* Disable Stash Logging in ezpublish.yml
+
+<pre class="prettyprint" data-lang="yml">
+stash:
+    <b>logging: false</b>
+    caches:
+        default:
+            handlers:
+                - FileSystem
+            inMemory: true
+            registerDoctrineAdapter: false
+</pre>
+
+---
+
+title: 414 Request-URI Too Long
+
+When doing subrequests, particularly ESI or Hinclude ones, current SiteAccess is transmitted in a serialized form, with its matcher. With a large number of configured SiteAccesses using Map\Host or Map\URI matcher (around 40, which is not uncommon for a multi-national, multi-lingual site) the URL can exceed the size of 8192 Bytes which most servers accept. As a result, the ESI/Hinclude call fails.
+
+* Fixed in Version 5.3.3 (2014.07)
+* <https://jira.ez.no/browse/EZP-23168>
+* <https://github.com/ezsystems/ezpublish-kernel/pull/949>
+
+---
+
 title: Multi-Site/Multi-Repository Setup
 subtitle:
 class: segue dark nobackground
@@ -308,6 +515,81 @@ title: TODO EKKE
 
 ---
 
+title: Multi-Site-Setup (old) Directory structure
+
+<pre class="">
+ezpublish                &lt;-- not used
+ezpublish_legacy
+&#8990;extension
+ &#8990;site_customer          &lt;-- each customer has its own extension and database
+ &#8990;site_customertwo
+&#8990;var
+ &#8990;site_customer          &lt;-- each customer has its own var directory
+ &#8990;site_customertwo
+site_customer            &lt;-- each customer has its own Symfony app
+site_customertwo
+src
+&#8990;CjwNetwork
+ &#8990;SiteCustomerBundle     &lt;-- each customer has its own bundle
+ &#8990;SiteCustomertwoBundle
+</pre>
+
+---
+
+title: Multi-Site-Setup (old) Detail ezpublish_legacy
+
+<pre class="">
+ezpublish_legacy
+&#8990;extension
+ &#8990;site_customer          &lt;-- each customer has its own extension
+  &#8990;classes
+  &#8990;design
+  &#8990;modules
+  &#8990;settings
+   &#8990;site.ini
+    &#8990;[DatabaseSettings]  &lt;-- each customer has its own database
+     &#8990;Database=database_site_customer
+ &#8990;site_customertwo
+  &#8990;[...]
+  &#8990;settings
+   &#8990;site.ini
+    &#8990;[DatabaseSettings]
+     &#8990;Database=database_site_customertwo
+&#8990;var
+ &#8990;site_customer          &lt;-- each customer has its own var directory
+ &#8990;site_customertwo
+</pre>
+
+---
+
+title: Multi-Site-Setup (old) Directory structure
+
+<pre class="">
+site_customer
+&#8990;autoload.php
+&#8990;bootstrap.php.cache
+&#8990;cache
+&#8990;check.php
+&#8990;config    &lt;-- all yml files like ezpublish folder, (to improve)
+ &#8990;config.yml
+ &#8990;ezpublish.yml
+&#8990; parameters.yml
+&#8990;console
+&#8990;logs
+&#8990;phpunit.xml.dist
+&#8990;Resources
+&#8990;sessions
+&#8990;SiteCjwbaseCache.php
+&#8990;SiteCjwbaseKernel.php
+&#8990;SymfonyRequirements.php
+</pre>
+
+---
+
+title: END TODO EKKE
+
+---
+
 title: Introducing CJW MultiSiteBundle
 build_lists: true
 
@@ -318,13 +600,15 @@ Although the first approach works fine, it has several drawbacks:
 * No global settings
 * No central site activation/administration
 
-Goal: keep everything in one place!
+* Goal: keep everything in one place!
 
 ---
 
 title: CJW MultiSiteBundle Features
+build_lists: true
 
 * Boots kernel and environment based on domain name mappings
+* Handles local, staging and live domain names
 * Allows for global activation of bundles
 * Allows for global settings
 * Provides a common console for all sites
@@ -357,7 +641,7 @@ Site Bundle Directory Layout
 <pre class="">
 src
 &#8990; Cjw
-  &#8990; SiteExample
+  &#8990; SiteExampleBundle
     &#8990; app
       &#8990; config
           cjwpublish.yml            &lt;-- contains domain mappings
@@ -394,3 +678,29 @@ parameters:
 
 ---
 
+title: Project Status
+
+* Currently in private Beta, not yet released
+* Ideas and Feedback welcome
+* Public Beta in October
+
+* <mailto:info@cjw-network.com>
+* <https://github.com/cjw-network/MultiSiteBundle>
+
+---
+
+title: Ressources
+
+Slides as PDF
+
+* see `src/Cjw/SummerCampBundle/Resources/doc`
+* <https://github.com/cjw-network/SummerCampBundle/Resources/doc>
+
+Slides (Source)
+
+* <https://github.com/dfritschy/cjw-summercamp-slides>
+
+CJW MultiSiteBundle
+
+* <https://github.com/cjw-network/MultiSiteBundle>
+* <mailto:info@cjw-network.com>
