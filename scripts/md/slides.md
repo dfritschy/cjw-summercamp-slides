@@ -74,7 +74,7 @@ Creating bundles is easy, don't work in the DemoBundle ;-)
 
 <pre class="prettyprint" data-lang="bash">
 $ php ezpublish/console generate:bundle
-</pr>
+</pre>
 
 ---
 
