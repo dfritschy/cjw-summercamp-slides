@@ -157,9 +157,10 @@ title: Ways to Fetch Content
 title: SearchService::findContent()
 build_lists: true
 
-The only `SearchService` function you will find in `DemoBundle`
+The only `SearchService` function you will find in `DemoBundle` ...
 
 - returns full `content` objects with ALL attributes in ALL languages
+- does not work <s>well</s> with multiple locations
 - scales very badly
 - no `asObjects` flag as in eZ 4
 
@@ -693,8 +694,8 @@ title: Ressources
 
 Slides as PDF
 
-* see `src/Cjw/SummerCampBundle/Resources/doc`
-* <https://github.com/cjw-network/SummerCampBundle/Resources/doc>
+* see `src/Cjw/SummerCampBundle/Resources/doc/learnings.pdf`
+* <https://github.com/cjw-network/SummerCampBundle/Resources/doc/learnings.pdf>
 
 Slides (Source)
 
@@ -704,3 +705,11 @@ CJW MultiSiteBundle
 
 * <https://github.com/cjw-network/MultiSiteBundle>
 * <mailto:info@cjw-network.com>
+
+---
+
+title: <a href="http://vote.netgenlabs.com/" style="color:#fff;">http://vote.netgenlabs.com/</a>
+subtitle: Please Vote!
+class: segue dark nobackground
+
+
