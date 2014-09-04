@@ -62,7 +62,7 @@ URL: https://code.google.com/p/io-2012-slides
 
 <ul class="build">
 <li><strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.</li>
-<li><strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since seven years.</li>
+<li><strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since eight years.</li>
 <li>Members of CJW Network</li>
 </ul></article>
  
@@ -123,6 +123,8 @@ URL: https://code.google.com/p/io-2012-slides
 <li>To be honest: as eZ 4 developers, we are complete novices in eZ 5</li>
 <li>It's easier for a Smyfony Crack to learn eZ than other way round</li>
 <li>Symfony community is hungry for a CMS, so watch out for new competition</li>
+<li>But @Symfony cracks: It's not easy: an eZ Publish and CMS expert will reduce your risk</li>
+<li>and will make your content architecture better and more maintainable</li>
 </ul></article>
  
 </slide>
@@ -135,7 +137,7 @@ URL: https://code.google.com/p/io-2012-slides
     </hgroup>
     <article ><ul>
 <li>A radical different thinking</li>
-<li>eZ 4 mangeled all together in the TPL -&gt; the view implemented the logic (fetch)</li>
+<li>eZ 4 mangled all together in the TPL -&gt; the view implemented the logic (fetch)</li>
 <li>Symfony enforces a clean separation, from routing to the controller to the rendering of the view</li>
 </ul></article>
  
@@ -171,7 +173,7 @@ $ php ezpublish/console generate:bundle
 <p>Our approach</p>
 <ul>
 <li>keep config in <code>ezpublish/config</code> as general as possible</li>
-<li>it should merely decribe your environment, not the application</li>
+<li>it should merely describe your environment, not the application</li>
 <li>move all site/function specific settings to the bundle</li>
 </ul></article>
  
@@ -245,8 +247,14 @@ ExampleBundle
       <h2>Ways to Fetch Content</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
-<li>SearchService::findContent()</li>
+    <article ><ul class="build">
+<li>LocationService::loadLocation()</li>
+<li>
+<p>ContentService::loadContent()</p>
+</li>
+<li>
+<p>SearchService::findContent()</p>
+</li>
 <li>
 <p>SearchService::findLocations()</p>
 </li>
@@ -351,9 +359,9 @@ $mySearchResults = $this->getLegacyKernel()->runCallback(
 <li>A generalized full and line view template for the easy stuff</li>
 <li>And again, basically one template per full view</li>
 </ul>
-<p>How to hande children (sub items)?</p>
+<p>How to handle children (sub items)?</p>
 <ul>
-<li>render directly in the template - the data is usally already there</li>
+<li>render directly in the template - the data is usually already there</li>
 <li>use <code>{{ render( controller( 'ez_content:viewLocation', {'locationId': child.id, 'viewType': 'line'} )) }}</code></li>
 </ul>
 <p>When to use ESI?</p>
@@ -403,7 +411,7 @@ views
 <slide  >
   
     <hgroup>
-      <h2>eZ View Caching</h2>
+      <h2>eZ View Caching (Legacy)</h2>
       <h3></h3>
     </hgroup>
     <article ><p>When the pagelayout is rendered, the <code>{$module_result.content}</code> part will be replaced with the actual output. If view caching is enabled, the entire result of the module will be cached. This means that the contents of the "module_result" variable will be put into a cache file (...)</p>
@@ -420,7 +428,7 @@ views
 <slide  >
   
     <hgroup>
-      <h2>HTTP Expiration and Validation</h2>
+      <h2>HTTP Expiration and Validation (Symfony)</h2>
       <h3></h3>
     </hgroup>
     <article ><p>The HTTP specification defines two caching models:</p>
@@ -438,7 +446,7 @@ views
       <h2>In Short (and much simplified...)</h2>
       <h3></h3>
     </hgroup>
-    <article ><p>eZ View Cache caches <strong>content</strong> and <strong>content fragements</strong></p>
+    <article ><p>eZ View Cache caches <strong>content</strong> and <strong>content fragments</strong></p>
 <ul>
 <li>Standard TTL is 2 hours</li>
 <li>Is purged on content modifications (with smart cache clearing rules)</li>
@@ -509,7 +517,7 @@ $response->setVary( 'X-User-Hash' );
       <h2>Emulating eZ 4 Cache behaviour in eZ 5</h2>
       <h3></h3>
     </hgroup>
-    <article ><p>This patch to <code>index.php</code> disables client and proxy caching without sacrifying the benefits of the Symfony HTTP cache. Use at own risk!</p>
+    <article ><p>This patch to <code>index.php</code> disables client and proxy caching without sacrificing the benefits of the Symfony HTTP cache. Use at own risk!</p>
 <pre class="prettyprint" data-lang="php">
 $response = $kernel->handle( $request );
 <b>
@@ -528,19 +536,137 @@ $kernel->terminate( $request, $response );
       <h2>Cache Recommendations</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
+    <article ><ul class="build">
 <li>Read the specifications</li>
 <li>Use Shared Caches with caution</li>
-<li>Set TTL values low enough</li>
 <li>Cave: <code>setTtl()</code> vs. <code>setClientTtl</code></li>
+<li>Set TTL as high as possible</li>
 <li>
-<p>For higher traffic sites, use Varnish</p>
+<p>Use Varnish</p>
 </li>
 <li>
 <p><a href="http://tools.ietf.org/html/rfc2616#page-74">http://tools.ietf.org/html/rfc2616#page-74</a></p>
 </li>
 <li><a href="https://www.mnot.net/cache_docs/">https://www.mnot.net/cache_docs/</a></li>
 </ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Cache per User - yml config</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>src/Cjw/SiteCustomerBundle/Ressources/config/services.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+
+parameters:
+    cjw_site_customer.user_hash_definer.class: Cjw\SiteCustomerBundle\Identity\UserHashDefiner
+
+services:
+    cjw_site_customer.user_hash_definer:
+        class: %cjw_site_customer.user_hash_definer.class%
+        tags:
+          - { name: ezpublish.identity_definer }
+        arguments: [@ezpublish.api.repository]
+
+</pre></article>
+ 
+</slide>
+
+<slide class="smaller" >
+  
+    <hgroup>
+      <h2>Cache per User - User Hash Definer</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>src/Cjw/SiteCustomerBundle/Identity/UserHashDefiner.php</code>
+<pre class="prettyprint" data-lang="php">
+namespace Cjw\SiteCustomerBundle\Identity;
+use eZ\Publish\SPI\User\IdentityAware;
+use eZ\Publish\SPI\User\Identity;
+use eZ\Publish\API\Repository\Repository;
+class UserHashDefiner implements IdentityAware
+{
+    private $repository;
+    public function __construct(Repository $repository)
+    {
+        $this-&gt;repository = $repository;
+    }
+    public function setIdentity(Identity $identity)
+    {
+        $current_user = $this-&gt;repository-&gt;getCurrentUser();
+        $identity-&gt;setInformation('UserID', $current_user-&gt;contentInfo-&gt;id);
+    }
+}
+</pre></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Cache per User - yml config</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>src/Cjw/SiteCustomerBundle/Ressources/config/services.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+
+parameters:
+    cjw_site_customer.user_hash_definer.class: Cjw\SiteCustomerBundle\Identity\UserHashDefiner
+
+services:
+    cjw_site_customer.user_hash_definer:
+        class: %cjw_site_customer.user_hash_definer.class%
+        tags:
+          - { name: ezpublish.identity_definer }
+        arguments: [@ezpublish.api.repository]
+
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Cache per User - Controller</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>src/Cjw/SiteCustomerBundle/Controller/CjwController.php</code></p>
+<pre class="prettyprint" data-lang="php">
+
+    public function sectionInternalAction($locationId, $viewType, $layout = false, array $params = array())
+    {
+        $response = new Response();
+        $response->setPrivate();
+        $response->headers->set('X-Location-Id', $locationId);
+        $response->setVary('X-User-Hash');
+        return $response;
+    }
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Cache per User - Location View Config</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>src/Cjw/SiteCustomerBundle/Ressources/config/ezpublish/override.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+
+system:
+    customer_user_de:
+        location_view:
+            full:
+                section_internal:
+                    controller:  "CjwSiteCustomerBundle:Cjw:sectionInternal"
+                    match:
+                        Identifier\Section: internal
+
+</pre></article>
  
 </slide>
 
@@ -722,7 +848,7 @@ stash:
     </hgroup>
     <article ><p>First Approach (proven in production)</p>
 <ul>
-<li>Use different <code>ezpublish</code> directories to host the different sites</li>
+<li>Use different <code>ezpublish</code> app directories to host the different sites</li>
 </ul>
 <p>Second approach (under development)</p>
 <ul>
@@ -734,17 +860,7 @@ stash:
 <slide  >
   
     <hgroup>
-      <h2>TODO EKKE</h2>
-      <h3></h3>
-    </hgroup>
-    <article ></article>
- 
-</slide>
-
-<slide  >
-  
-    <hgroup>
-      <h2>Multi-Site-Setup (old) Directory structure</h2>
+      <h2>Directory structure - Multi-Site-Setup (old)</h2>
       <h3></h3>
     </hgroup>
     <article ><pre class="">
@@ -799,7 +915,7 @@ ezpublish_legacy
 <slide  >
   
     <hgroup>
-      <h2>Multi-Site-Setup (old) Directory structure</h2>
+      <h2>Detail site_customer App - Multi-Site-Setup (old)</h2>
       <h3></h3>
     </hgroup>
     <article ><pre class="">
@@ -827,10 +943,40 @@ site_customer
 <slide  >
   
     <hgroup>
-      <h2>END TODO EKKE</h2>
+      <h2>Scripts on Shell - Multi-Site-Setup (old)</h2>
       <h3></h3>
     </hgroup>
-    <article ></article>
+    <article ><pre class="prettyprint" data-lang="bash">
+# Generate symlinks
+php site_customer/console assets:install --symlink web
+php site_customer/console ezpublish:legacy:assets_install --symlink web
+
+# Clear Cache
+php site_customer/console --env=prod cache:clear
+
+# Dump assets
+php site_customer/console assetic:dump --env=prod web
+
+# Run cronjobs
+php site_customer/console ezpublish:legacy:script runcronjobs.php --siteaccess customer_user_de cjw_newsletter
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Multiple Apps: Multi-Site-Setup (old)</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul class="build">
+<li>You can use one development environment with many projects</li>
+<li>You can use one or more production servers  or</li>
+<li>easily check out customer to different servers</li>
+<li>all customer are encapsulated apps</li>
+<li>solid and proven for more than 1,5 years</li>
+<li>Examples ...</li>
+</ul></article>
  
 </slide>
 
