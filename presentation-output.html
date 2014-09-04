@@ -119,7 +119,7 @@ URL: https://code.google.com/p/io-2012-slides
       <h2>Team up with a Symfony Crack</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
+    <article ><ul class="build">
 <li>To be honest: as eZ 4 developers, we are complete novices in eZ 5</li>
 <li>It's easier for a Smyfony Crack to learn eZ than other way round</li>
 <li>Symfony community is hungry for a CMS, so watch out for new competition</li>
@@ -135,7 +135,7 @@ URL: https://code.google.com/p/io-2012-slides
       <h2>Think in MVC</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
+    <article ><ul class="build">
 <li>A radical different thinking</li>
 <li>eZ 4 mangled all together in the TPL -&gt; the view implemented the logic (fetch)</li>
 <li>Symfony enforces a clean separation, from routing to the controller to the rendering of the view</li>
@@ -146,17 +146,35 @@ URL: https://code.google.com/p/io-2012-slides
 <slide  >
   
     <hgroup>
+      <h2>TODO MVC Grafik</h2>
+      <h3></h3>
+    </hgroup>
+    <article ></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
       <h2>Think in Bundles</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
+    <article ><p><em>What is a bundle?</em></p>
+<ul class="build">
+<li>Use a least one bundle per site</li>
 <li>Split your application in different bundles (site specific, functional, ...)</li>
-<li>Reuse your code: create and maintain a Base Bundle with general functions</li>
-</ul>
-<p>Creating bundles is easy, don't work in the DemoBundle ;-)</p>
+<li>
+<p>Reuse your code: create and maintain with love a Base Bundle with general functions</p>
+</li>
+<li>
+<p>Creating bundles is easy, don't work in the DemoBundle ;-)
+<li>
 <pre class="prettyprint" data-lang="bash">
 $ php ezpublish/console generate:bundle
-</pre></article>
+</pre>
+</li></p>
+</li>
+</ul></article>
  
 </slide>
 
@@ -166,12 +184,10 @@ $ php ezpublish/console generate:bundle
       <h2>Organize your config files</h2>
       <h3></h3>
     </hgroup>
-    <article ><ul>
-<li>The standard eZ installation is a mess...</li>
-<li>... and the DemoBundle only slowly becoming a source of good practice</li>
-</ul>
-<p>Our approach</p>
-<ul>
+    <article ><p>The standard eZ installation is a mess...</p>
+<p>... and the DemoBundle only slowly becoming a source of good practice</p>
+<p><em>How do YOU handle this?</em></p>
+<ul class="build">
 <li>keep config in <code>ezpublish/config</code> as general as possible</li>
 <li>it should merely describe your environment, not the application</li>
 <li>move all site/function specific settings to the bundle</li>
@@ -179,25 +195,83 @@ $ php ezpublish/console generate:bundle
  
 </slide>
 
-<slide  >
+<slide class="smaller" >
   
     <hgroup>
-      <h2>Keep ezpublish.yml small</h2>
+      <h2>Keep ezpublish.yml small (1)</h2>
       <h3></h3>
     </hgroup>
     <article ><p><code>ezpublish/config/ezpublish.yml</code></p>
 <pre class="prettyprint" data-lang="yml">
 imports:
     - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
+ezpublish:
+    siteaccess:
+        default_siteaccess: %cjw.site%_user
+        list:
+        groups:
+            default_group:
+        match:
+            \Cjw\MultiSiteBundle\Matcher\MapHost:
+                www.frb.ch: %cjw.site%_user
+                admin.frb.ch: %cjw.site%_admin
+    repositories:
+        default_repository:
+            engine: legacy
+            connection: default_connection
+</pre></article>
+ 
+</slide>
+
+<slide class="smaller" >
+  
+    <hgroup>
+      <h2>Keep ezpublish.yml small (2)</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><pre class="prettyprint" data-lang="yml">
+    system:
+        default_group:
+            repository: default_repository
+            var_dir: var/%cjw.site%
+            languages:
+                - ger-DE
+        %cjw.site%_user:
+            legacy_mode: false
+            languages:
+                - ger-DE
+            content:
+                view_cache: true
+                ttl_cache: true
+                default_ttl: 3600
+        %cjw.site%_admin:
+            legacy_mode: true
+            ...
+stash:
+    ...
+</pre></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Keep ezpublish.yml small (3)</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>Can even be shorter - get inspiration from <a href="https://github.com/lolautruche/metalfrance">https://github.com/lolautruche/metalfrance</a></p>
+<p>Extras:</p>
+<ul>
+<li>use parameters</li>
+<li>standardize site access names, groups, repository names</li>
+</ul>
+<p><code>ezpublish/config/parameters.yml</code></p>
+<pre class="prettyprint" data-lang="yml">
+parameters:
+    ...
+    cjw.site: frb
 </pre>
 
-<p>Keep these sections:</p>
-<ul>
-<li>doctrine (Database)</li>
-<li>ezpublish (Siteaccess Matching, Siteaccesses, Languages, Caching)</li>
-<li>stash</li>
-</ul>
-<p>Can even be shorter - get inspiration from <a href="https://github.com/lolautruche/metalfrance">https://github.com/lolautruche/metalfrance</a></p>
 <p><em>Note: prepending configuration does not work well with parameters</em></p></article>
  
 </slide>
@@ -216,7 +290,7 @@ ExampleBundle
     &#8990; ezpublish
         image.yml
         override.yml
-      ezpublish.yml
+      ezpublish.yml         &lt;-- includes files from ./ezpublish
       parameters.yml
       routing.yml
       services.yml
@@ -231,12 +305,17 @@ ExampleBundle
       <h3></h3>
     </hgroup>
     <article ><p>After several tries, we ended up with...</p>
-<ul>
+<ul class="build">
 <li>Basically one controller per full view</li>
 <li>Separate controllers for navigation etc.</li>
+<li>
+<p>Consider caching (TTL, X-Location Header)</p>
+</li>
+<li>
+<p><strong>Recommended: Move business logic to separate model</strong></p>
+</li>
 <li>Retrieve all needed data (location, children, ...)</li>
 <li>Prepare the data for easy processing in the templates</li>
-<li>Consider caching (TTL, X-Location Header)</li>
 </ul></article>
  
 </slide>
@@ -248,18 +327,18 @@ ExampleBundle
       <h3></h3>
     </hgroup>
     <article ><ul class="build">
-<li>LocationService::loadLocation()</li>
+<li>LocationService::loadLocation( $id )</li>
 <li>
-<p>ContentService::loadContent()</p>
+<p>ContentService::loadContent( $id )</p>
 </li>
 <li>
-<p>SearchService::findContent()</p>
+<p>SearchService::findContent( $query )</p>
 </li>
 <li>
-<p>SearchService::findLocations()</p>
+<p>SearchService::findLocations( $query )</p>
 </li>
 <li>
-<p>LocationService::loadLocationChildren()</p>
+<p>LocationService::loadLocationChildren( $location )</p>
 </li>
 <li>
 <p>Legacy fetch functions</p>
@@ -278,17 +357,21 @@ ExampleBundle
 <ul class="build">
 <li>returns full <code>content</code> objects with ALL attributes in ALL languages</li>
 <li>does not work <s>well</s> with multiple locations</li>
-<li>scales very badly</li>
 <li>
-<p>no <code>asObjects</code> flag as in eZ 4</p>
+<p>no <code>as_objects</code> flag as in eZ 4</p>
 </li>
 <li>
-<p>fetching a content tree with 116 locations took 30 seconds</p>
+<p>scales very badly</p>
 </li>
+<li>fetching a content tree with 116 locations took 30 seconds</li>
 <li>most of the time is spent in manipulating the SQL result in PHP</li>
-<li>Another test: 24 hits, PHP array 44'880 rows with 39 elements each, highly redundant</li>
-</ul>
-<p><a href="http://share.ez.no/blogs/donat-fritschy/searchservice-performance">http://share.ez.no/blogs/donat-fritschy/searchservice-performance</a></p></article>
+<li>
+<p>Another test: 24 hits, PHP array 44'880 rows with 39 elements each, highly redundant</p>
+</li>
+<li>
+<p><a href="http://share.ez.no/blogs/donat-fritschy/searchservice-performance">http://share.ez.no/blogs/donat-fritschy/searchservice-performance</a></p>
+</li>
+</ul></article>
  
 </slide>
 
@@ -302,7 +385,11 @@ ExampleBundle
 <p>Roughly equivalent to good old <code>fetch( 'content', 'list' )</code></p>
 <ul class="build">
 <li>returns <code>location</code> objects with <code>contentInfo</code> only</li>
+<li>usually sufficient for building a menu</li>
+<li>use <code>ContentService::loadContent()</code> to fetch whole object</li>
+<li>Performance lower than legacy, but acceptable</li>
 <li>fetching a content tree with 116 locations took &lt; 1 second</li>
+<li>scales very well</li>
 </ul></article>
  
 </slide>
@@ -313,9 +400,8 @@ ExampleBundle
       <h2>LocationService::loadLocationChildren()</h2>
       <h3></h3>
     </hgroup>
-    <article ><p>&laquo;Think of <code>LocationService::loadLocationChildren()</code> as primarily intended for administration interface.&raquo;</p>
-<p>&laquo;If what it offers suits you for the frontend as well, great, but otherwise you will have to use SearchService. In other words, this method will not get filtering capabilities.&raquo;</p>
-<p><em>(From a discussion with Petar)</em></p>
+    <article ><p>Think of <code>LocationService::loadLocationChildren()</code> as primarily intended for administration interface. Has no filtering capabilities.</p>
+<p>Further reading:</p>
 <p><a href="http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service">http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service</a></p></article>
  
 </slide>
@@ -352,7 +438,74 @@ $mySearchResults = $this->getLegacyKernel()->runCallback(
 <slide  >
   
     <hgroup>
-      <h2>TWIG Templates</h2>
+      <h2>Templates</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p>How to transform a full view TPL with children to Symfony?</p>
+<p><code>full/folder.tpl</code></p>
+<pre class="prettyprint" data-lang="tpl">
+&lt;h1&gt;{$node.data_map.title.content|wash()}&lt;/h1&gt;
+{attribute_view_gui attribute=$node.data_map.short_description}
+...
+
+{def $list_items=fetch( 'content', 'list', ... ) ) }
+
+{foreach $list_items as $child}
+    {node_view_gui view=line content_node=$child}
+{/foreach}
+</pre></article>
+ 
+</slide>
+
+<slide class="smaller" >
+  
+    <hgroup>
+      <h2>Moving to TWIG</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Resources/view/full.html.twig</code>
+<pre class="prettyprint" data-lang="Twig">
+&lt;h1&gt;{{ ez_render_field( content, 'title') }}&lt;/h1&gt;
+{{ ez_render_field( content, 'short_description') }}
+...
+{{ render( controller( "CjwBaseBundle:Default:subItems", {'locationId': location.id }) ) }}
+</pre>
+<code>Controller/DefaultController.php</code>
+<pre class="prettyprint" data-lang="php">
+public function subItemsAction( $locationId )
+{
+    $response = new Response;
+    $locationList = $this-&gt;fetchLocationListIncludingContentTypes( $locationId, array() );
+    return $this-&gt;render(
+                "CjwBaseBundle::sub_items.html.twig",
+                    array( "locationList" =&gt; $locationList ),
+                    $response
+    );
+}
+</pre></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Moving to TWIG</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><p><code>Resources/view/sub_items.html.twig</code>
+<pre class="prettyprint" data-lang="Twig">
+    {% for location in locationList %}
+        {{ render( controller( 'ez_content:viewLocation',
+           {'locationId': location.id, 'viewType': 'line'} ))  }}
+    {% endfor %}
+</pre></p></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2></h2>
       <h3></h3>
     </hgroup>
     <article ><ul>

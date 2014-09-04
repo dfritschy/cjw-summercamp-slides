@@ -50,6 +50,7 @@ class: segue dark nobackground
 ---
 
 title: Team up with a Symfony Crack
+build_lists: true
 
 - To be honest: as eZ 4 developers, we are complete novices in eZ 5
 - It's easier for a Smyfony Crack to learn eZ than other way round
@@ -59,6 +60,7 @@ title: Team up with a Symfony Crack
 ---
 
 title: Think in MVC
+build_lists: true
 
 - A radical different thinking
 - eZ 4 mangled all together in the TPL -&gt; the view implemented the logic (fetch)
@@ -66,25 +68,36 @@ title: Think in MVC
 
 ---
 
+title: TODO MVC Grafik
+
+---
+
 title: Think in Bundles
+build_lists: true
 
+*What is a bundle?*
+
+- Use a least one bundle per site
 - Split your application in different bundles (site specific, functional, ...)
-- Reuse your code: create and maintain a Base Bundle with general functions
+- Reuse your code: create and maintain with love a Base Bundle with general functions
 
-Creating bundles is easy, don't work in the DemoBundle ;-)
-
+- Creating bundles is easy, don't work in the DemoBundle ;-)
+<li>
 <pre class="prettyprint" data-lang="bash">
 $ php ezpublish/console generate:bundle
 </pre>
+</li>
 
 ---
 
 title: Organize your config files
+build_lists: true
 
-- The standard eZ installation is a mess...
-- ... and the DemoBundle only slowly becoming a source of good practice
+The standard eZ installation is a mess...
 
-Our approach
+... and the DemoBundle only slowly becoming a source of good practice
+
+*How do YOU handle this?*
 
 - keep config in `ezpublish/config` as general as possible
 - it should merely describe your environment, not the application
@@ -92,22 +105,75 @@ Our approach
 
 ---
 
-title: Keep ezpublish.yml small
+title: Keep ezpublish.yml small (1)
+class: smaller
 
 `ezpublish/config/ezpublish.yml`
 
 <pre class="prettyprint" data-lang="yml">
 imports:
     - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
+ezpublish:
+    siteaccess:
+        default_siteaccess: %cjw.site%_user
+        list:
+        groups:
+            default_group:
+        match:
+            \Cjw\MultiSiteBundle\Matcher\MapHost:
+                www.frb.ch: %cjw.site%_user
+                admin.frb.ch: %cjw.site%_admin
+    repositories:
+        default_repository:
+            engine: legacy
+            connection: default_connection
 </pre>
 
-Keep these sections:
+---
 
-- doctrine (Database)
-- ezpublish (Siteaccess Matching, Siteaccesses, Languages, Caching)
-- stash
+title: Keep ezpublish.yml small (2)
+class: smaller
+
+<pre class="prettyprint" data-lang="yml">
+    system:
+        default_group:
+            repository: default_repository
+            var_dir: var/%cjw.site%
+            languages:
+                - ger-DE
+        %cjw.site%_user:
+            legacy_mode: false
+            languages:
+                - ger-DE
+            content:
+                view_cache: true
+                ttl_cache: true
+                default_ttl: 3600
+        %cjw.site%_admin:
+            legacy_mode: true
+            ...
+stash:
+    ...
+</pre>
+
+---
+
+title: Keep ezpublish.yml small (3)
 
 Can even be shorter - get inspiration from <https://github.com/lolautruche/metalfrance>
+
+Extras:
+
+- use parameters
+- standardize site access names, groups, repository names
+
+`ezpublish/config/parameters.yml`
+
+<pre class="prettyprint" data-lang="yml">
+parameters:
+    ...
+    cjw.site: frb
+</pre>
 
 *Note: prepending configuration does not work well with parameters*
 
@@ -124,7 +190,7 @@ ExampleBundle
     &#8990; ezpublish
         image.yml
         override.yml
-      ezpublish.yml
+      ezpublish.yml         &lt;-- includes files from ./ezpublish
       parameters.yml
       routing.yml
       services.yml
@@ -133,27 +199,30 @@ ExampleBundle
 ---
 
 title: Controllers
+build_lists: true
 
 After several tries, we ended up with...
 
 - Basically one controller per full view
 - Separate controllers for navigation etc.
+- Consider caching (TTL, X-Location Header)
+
+- **Recommended: Move business logic to separate model**
 - Retrieve all needed data (location, children, ...)
 - Prepare the data for easy processing in the templates
-- Consider caching (TTL, X-Location Header)
 
 ---
 
 title: Ways to Fetch Content
 build_lists: true
 
-- LocationService::loadLocation()
-- ContentService::loadContent()
+- LocationService::loadLocation( $id )
+- ContentService::loadContent( $id )
 
-- SearchService::findContent()
-- SearchService::findLocations()
+- SearchService::findContent( $query )
+- SearchService::findLocations( $query )
 
-- LocationService::loadLocationChildren()
+- LocationService::loadLocationChildren( $location )
 
 - Legacy fetch functions
 
@@ -166,14 +235,14 @@ The only `SearchService` function you will find in `DemoBundle` ...
 
 - returns full `content` objects with ALL attributes in ALL languages
 - does not work <s>well</s> with multiple locations
-- scales very badly
-- no `asObjects` flag as in eZ 4
+- no `as_objects` flag as in eZ 4
 
+- scales very badly
 - fetching a content tree with 116 locations took 30 seconds
 - most of the time is spent in manipulating the SQL result in PHP
 - Another test: 24 hits, PHP array 44'880 rows with 39 elements each, highly redundant
 
-<http://share.ez.no/blogs/donat-fritschy/searchservice-performance>
+- <http://share.ez.no/blogs/donat-fritschy/searchservice-performance>
 
 ---
 
@@ -185,17 +254,19 @@ build_lists: true
 Roughly equivalent to good old `fetch( 'content', 'list' )`
 
 - returns `location` objects with `contentInfo` only
+- usually sufficient for building a menu
+- use `ContentService::loadContent()` to fetch whole object
+- Performance lower than legacy, but acceptable
 - fetching a content tree with 116 locations took &lt; 1 second
+- scales very well
 
 ---
 
 title: LocationService::loadLocationChildren()
 
-&laquo;Think of `LocationService::loadLocationChildren()` as primarily intended for administration interface.&raquo;
+Think of `LocationService::loadLocationChildren()` as primarily intended for administration interface. Has no filtering capabilities.
 
-&laquo;If what it offers suits you for the frontend as well, great, but otherwise you will have to use SearchService. In other words, this method will not get filtering capabilities.&raquo;
-
-*(From a discussion with Petar)*
+Further reading:
 
 <http://www.netgenlabs.com/Blog/Fetching-content-in-eZ-Publish-5-using-Search-service>
 
@@ -227,21 +298,69 @@ $mySearchResults = $this->getLegacyKernel()->runCallback(
 
 ---
 
-title: TWIG Templates
+title: Templates
 
-- A generalized full and line view template for the easy stuff
-- And again, basically one template per full view
+How to transform a full view TPL with children to Symfony?
 
+`full/folder.tpl`
 
-How to handle children (sub items)?
+<pre class="prettyprint" data-lang="tpl">
+&lt;h1&gt;{$node.data_map.title.content|wash()}&lt;/h1&gt;
+{attribute_view_gui attribute=$node.data_map.short_description}
+...
 
-- render directly in the template - the data is usually already there
-- use `{{ render( controller( 'ez_content:viewLocation', {'locationId': child.id, 'viewType': 'line'} )) }}`
+{def $list_items=fetch( 'content', 'list', ... ) ) }
 
-When to use ESI?
+{foreach $list_items as $child}
+    {node_view_gui view=line content_node=$child}
+{/foreach}
+</pre>
 
-- nice concept, but quite a big overhead
-- better suited for larger chunks
+---
+
+title: Moving to TWIG
+class: smaller
+
+`Resources/view/full.html.twig`
+<pre class="prettyprint" data-lang="Twig">
+&lt;h1&gt;{{ ez_render_field( content, 'title') }}&lt;/h1&gt;
+{{ ez_render_field( content, 'short_description') }}
+...
+{{ render( controller( "CjwBaseBundle:Default:subItems", {'locationId': location.id }) ) }}
+</pre>
+`Controller/DefaultController.php`
+<pre class="prettyprint" data-lang="php">
+public function subItemsAction( $locationId )
+{
+    $response = new Response;
+    $locationList = $this->fetchLocationListIncludingContentTypes( $locationId, array() );
+    return $this->render(
+                "CjwBaseBundle::sub_items.html.twig",
+                    array( "locationList" => $locationList ),
+                    $response
+    );
+}
+</pre>
+
+---
+
+title: Moving to TWIG
+
+`Resources/view/sub_items.html.twig`
+<pre class="prettyprint" data-lang="Twig">
+{% for location in locationList %}
+    {{ render( controller( 'ez_content:viewLocation',
+       {'locationId': location.id, 'viewType': 'line'} ))  }}
+{% endfor %}
+</pre>
+
+---
+
+title: Our approach
+
+- Basically one template per full view
+- Render children directly in the full view template
+- Generalized full and line view templates for the easy stuff
 
 ---
 
@@ -392,26 +511,6 @@ build_lists: true
 
 ---
 
-title: Cache per User - yml config
-
-`src/Cjw/SiteCustomerBundle/Ressources/config/services.yml`
-
-<pre class="prettyprint" data-lang="yml">
-
-parameters:
-    cjw_site_customer.user_hash_definer.class: Cjw\SiteCustomerBundle\Identity\UserHashDefiner
-
-services:
-    cjw_site_customer.user_hash_definer:
-        class: %cjw_site_customer.user_hash_definer.class%
-        tags:
-          - { name: ezpublish.identity_definer }
-        arguments: [@ezpublish.api.repository]
-
-</pre>
-
----
-
 title: Cache per User - User Hash Definer
 class: smaller
 
@@ -476,7 +575,7 @@ title: Cache per User - Controller
 
 ---
 
-title: Cache per User - Location View Config
+title: Cache per User - Location View Configuration
 
 `src/Cjw/SiteCustomerBundle/Ressources/config/ezpublish/override.yml`
 
