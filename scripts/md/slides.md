@@ -68,7 +68,9 @@ build_lists: true
 
 ---
 
-title: TODO MVC Grafik
+title: MVC Blackbox
+
+<img src="images/mvc.jpg" alt="" width="800" style="margin-top:-40px">
 
 ---
 

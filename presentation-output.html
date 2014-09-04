@@ -146,10 +146,10 @@ URL: https://code.google.com/p/io-2012-slides
 <slide  >
   
     <hgroup>
-      <h2>TODO MVC Grafik</h2>
+      <h2>MVC Blackbox</h2>
       <h3></h3>
     </hgroup>
-    <article ></article>
+    <article ><p><img src="images/mvc.jpg" alt="" width="800" style="margin-top:-40px"></p></article>
  
 </slide>
 
@@ -494,10 +494,10 @@ public function subItemsAction( $locationId )
     </hgroup>
     <article ><p><code>Resources/view/sub_items.html.twig</code>
 <pre class="prettyprint" data-lang="Twig">
-    {% for location in locationList %}
-        {{ render( controller( 'ez_content:viewLocation',
-           {'locationId': location.id, 'viewType': 'line'} ))  }}
-    {% endfor %}
+{% for location in locationList %}
+    {{ render( controller( 'ez_content:viewLocation',
+       {'locationId': location.id, 'viewType': 'line'} ))  }}
+{% endfor %}
 </pre></p></article>
  
 </slide>
@@ -505,22 +505,13 @@ public function subItemsAction( $locationId )
 <slide  >
   
     <hgroup>
-      <h2></h2>
+      <h2>Our approach</h2>
       <h3></h3>
     </hgroup>
     <article ><ul>
-<li>A generalized full and line view template for the easy stuff</li>
-<li>And again, basically one template per full view</li>
-</ul>
-<p>How to handle children (sub items)?</p>
-<ul>
-<li>render directly in the template - the data is usually already there</li>
-<li>use <code>{{ render( controller( 'ez_content:viewLocation', {'locationId': child.id, 'viewType': 'line'} )) }}</code></li>
-</ul>
-<p>When to use ESI?</p>
-<ul>
-<li>nice concept, but quite a big overhead</li>
-<li>better suited for larger chunks</li>
+<li>Basically one template per full view</li>
+<li>Render children directly in the full view template</li>
+<li>Generalized full and line view templates for the easy stuff</li>
 </ul></article>
  
 </slide>
@@ -705,29 +696,6 @@ $kernel->terminate( $request, $response );
  
 </slide>
 
-<slide  >
-  
-    <hgroup>
-      <h2>Cache per User - yml config</h2>
-      <h3></h3>
-    </hgroup>
-    <article ><p><code>src/Cjw/SiteCustomerBundle/Ressources/config/services.yml</code></p>
-<pre class="prettyprint" data-lang="yml">
-
-parameters:
-    cjw_site_customer.user_hash_definer.class: Cjw\SiteCustomerBundle\Identity\UserHashDefiner
-
-services:
-    cjw_site_customer.user_hash_definer:
-        class: %cjw_site_customer.user_hash_definer.class%
-        tags:
-          - { name: ezpublish.identity_definer }
-        arguments: [@ezpublish.api.repository]
-
-</pre></article>
- 
-</slide>
-
 <slide class="smaller" >
   
     <hgroup>
@@ -804,7 +772,7 @@ services:
 <slide  >
   
     <hgroup>
-      <h2>Cache per User - Location View Config</h2>
+      <h2>Cache per User - Location View Configuration</h2>
       <h3></h3>
     </hgroup>
     <article ><p><code>src/Cjw/SiteCustomerBundle/Ressources/config/ezpublish/override.yml</code></p>
