@@ -75,13 +75,36 @@ URL: https://code.google.com/p/io-2012-slides
       <h3></h3>
     </hgroup>
     <article ><ul class="build">
-<li>Last year we have presented our Cookbok...</li>
+<li>Last year we have presented our Cookbook...</li>
 <li>
 <p>... today you get a Ratatouille ;-)</p>
 </li>
 <li>
-<p>Let's share the experiences you and we made in the last year!</p>
+<p><strong>Let's share the experiences you and we made in the last year!</strong></p>
 </li>
+<li>
+<p><a href="http://de.slideshare.net/dfritschy/how-to-start-with-ez-publish-5">http://de.slideshare.net/dfritschy/how-to-start-with-ez-publish-5</a></p>
+</li>
+<li><a href="https://github.com/dfritschy/cjw-cookbook">https://github.com/dfritschy/cjw-cookbook</a></li>
+</ul></article>
+ 
+</slide>
+
+<slide  >
+  
+    <hgroup>
+      <h2>Who is in the audience?</h2>
+      <h3></h3>
+    </hgroup>
+    <article ><ul class="build">
+<li>Who is coming from the eZ World?</li>
+<li>
+<p>Who is coming from the Symfony World?</p>
+</li>
+<li>
+<p>Who has realized eZ Publish 5 sites (productive)?</p>
+</li>
+<li>Who has realized pure eZ Publish 5 sites (no legacy)?</li>
 </ul></article>
  
 </slide>
@@ -124,7 +147,7 @@ URL: https://code.google.com/p/io-2012-slides
 <li>It's easier for a Smyfony Crack to learn eZ than other way round</li>
 <li>Symfony community is hungry for a CMS, so watch out for new competition</li>
 <li>But @Symfony cracks: It's not easy: an eZ Publish and CMS expert will reduce your risk</li>
-<li>and will make your content architecture better and more maintainable</li>
+<li>And will make your content architecture better and more maintainable</li>
 </ul></article>
  
 </slide>
@@ -149,7 +172,7 @@ URL: https://code.google.com/p/io-2012-slides
       <h2>MVC Blackbox</h2>
       <h3></h3>
     </hgroup>
-    <article ><p><img src="images/mvc.jpg" alt="" width="800" style="margin-top:-40px"></p></article>
+    <article ><p><img src="images/mvc.jpg" alt="" width="800" style="margin-top:-50px"></p></article>
  
 </slide>
 
@@ -163,8 +186,9 @@ URL: https://code.google.com/p/io-2012-slides
 <ul class="build">
 <li>Use a least one bundle per site</li>
 <li>Split your application in different bundles (site specific, functional, ...)</li>
+<li>Reuse your code: create and maintain with love a Base Bundle with general functions</li>
 <li>
-<p>Reuse your code: create and maintain with love a Base Bundle with general functions</p>
+<p>Refactor it frequently as you learn and the product evolves</p>
 </li>
 <li>
 <p>Creating bundles is easy, don't work in the DemoBundle ;-)
@@ -185,7 +209,7 @@ $ php ezpublish/console generate:bundle
       <h3></h3>
     </hgroup>
     <article ><p>The standard eZ installation is a mess...</p>
-<p>... and the DemoBundle only slowly becoming a source of good practice</p>
+<p>... and the DemoBundle is only slowly becoming a source of good practice</p>
 <p><em>How do YOU handle this?</em></p>
 <ul class="build">
 <li>keep config in <code>ezpublish/config</code> as general as possible</li>
@@ -207,18 +231,18 @@ imports:
     - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
 ezpublish:
     siteaccess:
-        default_siteaccess: %cjw.site%_user
+        default_siteaccess:<b>%cjw.site%</b>_user
         list:
         groups:
-            default_group:
+            <b>default_group</b>:
         match:
             \Cjw\MultiSiteBundle\Matcher\MapHost:
-                www.frb.ch: %cjw.site%_user
-                admin.frb.ch: %cjw.site%_admin
+                www.%cjw.site%.ch: %cjw.site%_user
+                admin.%cjw.site%.ch: %cjw.site%_admin
     repositories:
-        default_repository:
+        <b>default_repository</b>:
             engine: legacy
-            connection: default_connection
+            connection: <b>default_connection</b>
 </pre></article>
  
 </slide>
@@ -320,25 +344,25 @@ ExampleBundle
  
 </slide>
 
-<slide  >
+<slide class="smaller" >
   
     <hgroup>
       <h2>Ways to Fetch Content</h2>
       <h3></h3>
     </hgroup>
     <article ><ul class="build">
-<li>LocationService::loadLocation( $id )</li>
+<li>LocationService::loadLocation( $id ) --&gt; location</li>
 <li>
-<p>ContentService::loadContent( $id )</p>
+<p>ContentService::loadContent( $id )   --&gt; content</p>
 </li>
 <li>
-<p>SearchService::findContent( $query )</p>
+<p>SearchService::findContent( $query ) --&gt; list of content</p>
 </li>
 <li>
-<p>SearchService::findLocations( $query )</p>
+<p>SearchService::findLocations( $query ) --&gt; list of location</p>
 </li>
 <li>
-<p>LocationService::loadLocationChildren( $location )</p>
+<p>LocationService::loadLocationChildren( $location ) --&gt; list of location</p>
 </li>
 <li>
 <p>Legacy fetch functions</p>
@@ -599,7 +623,7 @@ views
 <ul>
 <li>eZ uses Expiration model by default</li>
 <li>Standard TTL is 60 seconds (86400 for tree menu!)</li>
-<li>Symfony Cache is purged from backend, <strong>but only for ONE location</strong></li>
+<li>Symfony Cache is purged from backend</li>
 </ul>
 <p>Let's dive in a bit deeper...</p></article>
  

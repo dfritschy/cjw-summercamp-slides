@@ -12,7 +12,7 @@ build_lists: true
 
 -->
 
-* <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major eZ 5 projects.
+* <strong>Donat</strong> is owner of Webmanufaktur, a full service web agency in Switzerland. He works as projects manager, software architect and developer and likes thinking outside of the box. In the last year he has been involved in major pure eZ 5 projects.
 * <strong>Ekke</strong> is a consultant with deep knowledge in eZ Publish 4 and 5, eZ Find / Apache Solr and with a faible for coming cutting edge web technologies. He is one of the organizers of the PHP Unconference since eight years.
 * Members of CJW Network
 
@@ -22,10 +22,24 @@ title: Learnings from Real eZ Publish 5 Projects
 class: big
 build_lists: true
 
-- Last year we have presented our Cookbok...
+- Last year we have presented our Cookbook...
 - ... today you get a Ratatouille ;-)
 
-- Let's share the experiences you and we made in the last year!
+- **Let's share the experiences you and we made in the last year!**
+
+- <http://de.slideshare.net/dfritschy/how-to-start-with-ez-publish-5>
+- <https://github.com/dfritschy/cjw-cookbook>
+
+---
+
+title: Who is in the audience?
+build_lists: true
+
+- Who is coming from the eZ World?
+- Who is coming from the Symfony World?
+
+- Who has realized eZ Publish 5 sites (productive)?
+- Who has realized pure eZ Publish 5 sites (no legacy)?
 
 ---
 
@@ -56,7 +70,7 @@ build_lists: true
 - It's easier for a Smyfony Crack to learn eZ than other way round
 - Symfony community is hungry for a CMS, so watch out for new competition
 - But @Symfony cracks: It's not easy: an eZ Publish and CMS expert will reduce your risk
-- and will make your content architecture better and more maintainable
+- And will make your content architecture better and more maintainable
 ---
 
 title: Think in MVC
@@ -70,7 +84,7 @@ build_lists: true
 
 title: MVC Blackbox
 
-<img src="images/mvc.jpg" alt="" width="800" style="margin-top:-40px">
+<img src="images/mvc.jpg" alt="" width="800" style="margin-top:-50px">
 
 ---
 
@@ -82,6 +96,7 @@ build_lists: true
 - Use a least one bundle per site
 - Split your application in different bundles (site specific, functional, ...)
 - Reuse your code: create and maintain with love a Base Bundle with general functions
+- Refactor it frequently as you learn and the product evolves
 
 - Creating bundles is easy, don't work in the DemoBundle ;-)
 <li>
@@ -97,7 +112,7 @@ build_lists: true
 
 The standard eZ installation is a mess...
 
-... and the DemoBundle only slowly becoming a source of good practice
+... and the DemoBundle is only slowly becoming a source of good practice
 
 *How do YOU handle this?*
 
@@ -117,18 +132,18 @@ imports:
     - {resource: "@CjwExampleBundle/Resources/config/ezpublish.yml"}
 ezpublish:
     siteaccess:
-        default_siteaccess: %cjw.site%_user
+        default_siteaccess:<b>%cjw.site%</b>_user
         list:
         groups:
-            default_group:
+            <b>default_group</b>:
         match:
             \Cjw\MultiSiteBundle\Matcher\MapHost:
-                www.frb.ch: %cjw.site%_user
-                admin.frb.ch: %cjw.site%_admin
+                www.%cjw.site%.ch: %cjw.site%_user
+                admin.%cjw.site%.ch: %cjw.site%_admin
     repositories:
-        default_repository:
+        <b>default_repository</b>:
             engine: legacy
-            connection: default_connection
+            connection: <b>default_connection</b>
 </pre>
 
 ---
@@ -217,14 +232,15 @@ After several tries, we ended up with...
 
 title: Ways to Fetch Content
 build_lists: true
+class: smaller
 
-- LocationService::loadLocation( $id )
-- ContentService::loadContent( $id )
+- LocationService::loadLocation( $id ) --&gt; location
+- ContentService::loadContent( $id )   --&gt; content
 
-- SearchService::findContent( $query )
-- SearchService::findLocations( $query )
+- SearchService::findContent( $query ) --&gt; list of content
+- SearchService::findLocations( $query ) --&gt; list of location
 
-- LocationService::loadLocationChildren( $location )
+- LocationService::loadLocationChildren( $location ) --&gt; list of location
 
 - Legacy fetch functions
 
@@ -433,7 +449,7 @@ Symfony's HTTP Cache caches **requests**
 
 * eZ uses Expiration model by default
 * Standard TTL is 60 seconds (86400 for tree menu!)
-* Symfony Cache is purged from backend, **but only for ONE location**
+* Symfony Cache is purged from backend
 
 Let's dive in a bit deeper...
 
